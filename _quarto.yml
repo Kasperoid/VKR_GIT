@@ -1,0 +1,34 @@
+project:
+  type: book
+
+book:
+  title: "Выпускная квалификационная работа"
+  author: "Устинов И. А., БИСО-01-21"
+  chapters:
+    - index.qmd
+    - chapters/chapter1/chapter1.qmd
+    
+lang: ru
+mainfont: "Times New Roman"
+
+crossref:
+  fig-title: "Рисунок"
+  fig-prefix: "рис."
+  tbl-prefix: "табл."
+  title-delim: " — "
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-title: "СОДЕРЖАНИЕ"
+    number-sections: true
+    number-depth: 3
+  pdf:
+    documentclass: report
+    toc: true
+    number-sections: true
+    pdf-engine: xelatex
+
+bibliography: references/references.bib
+csl: references/gost-r-7-0-5-2008-numeric.csl
