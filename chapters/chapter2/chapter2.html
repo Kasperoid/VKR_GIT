@@ -343,7 +343,43 @@ x_{cos} = \cos \left( 2\pi * \frac{x}{P} \right)
 </section>
 <section id="клиентская-часть" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="клиентская-часть"><span class="header-section-number">2.2</span> Клиентская часть</h2>
-<p>Клиентская часть разрабатываемой системы выполняется в виде мобильного приложения, при его разработке целесообразно использовать кроссплатформенные технологии, позволяющие реализовать пользовательский интерфейс сразу для нескольких операционных систем на базе единого исходного кода, для этого можно использовать технологию React Native. Данное мобильное приложение должно включать в себя:</p>
+<p>В качестве инструмента взаимодействия пользователя с системой мониторинга стоит рассматривать мобильное приложение, так как оно обеспечивает непрерывный доступ к информации, то есть в случае обнаружения подозрительной сетевой активности пользователь может быть мгновенно проинформирован, например, с помощью push-уведомлений. Кроме того, современные мобильные операционные системы имеют встроенную поддержку управления VPN-конфигурациями, что значительно упрощает процесс подключения устройства к выделенному серверу.</p>
+<p>Также по состоянию на июль 2026 года доля мобильного трафика составляет подавляющее большинство – 65,39%, тогда как на настольные компьютеры приходится лишь 33,21% (<a href="#fig-traffic-share" class="quarto-xref">рис.&nbsp;<span>2.2</span></a>) <span class="citation" data-cites="stat_usage_phones">[<a href="#ref-stat_usage_phones" role="doc-biblioref">2</a>]</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-traffic-share" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-traffic-share-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="chapter2_files/figure-html/fig-traffic-share-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-traffic-share-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;2.2— Доля трафика по платформам за июль 2026
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Ретроспективный анализ за годовой период подтверждает стабильность распределения доли трафика по платформам (<a href="#fig-traffic-trend" class="quarto-xref">рис.&nbsp;<span>2.3</span></a>) <span class="citation" data-cites="stat_usage_phones">[<a href="#ref-stat_usage_phones" role="doc-biblioref">2</a>]</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-traffic-trend" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-traffic-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="chapter2_files/figure-html/fig-traffic-trend-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-traffic-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;2.3— Динамика распределения трафика по платформам
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Для обеспечения качественного взаимодействия с пользователем архитектура клиентского приложения должна базироваться на следующих принципах:</p>
+<ul>
+<li><p>Использование визуализации и агрегации данных. Анализатор сетевого трафика генерирует журналы событий, которые тяжело просматривать, поэтому эти данные необходимо преобразовывать в интуитивно понятные графические элементы, например, в мобильном интерфейсе можно предоставлять пользователю агрегированную статистику: графики объемов входящего и исходящего трафика, визуальное представление стран взаимодействия на карте мира или списки наиболее посещаемых доменов.</p></li>
+<li><p>Управление ограничениями. Система должна предоставлять пользователю возможность настраивать правила безопасности, без необходимости доступа к персональному компьютеру.</p></li>
+</ul>
+<p>При разработке клиентской части целесообразно использовать кроссплатформенные технологии, позволяющие реализовать пользовательский интерфейс сразу для нескольких операционных систем на базе единого исходного кода, для этого можно использовать технологию React Native. Данное мобильное приложение должно включать в себя:</p>
 <ul>
 <li>Регистрацию нового пользователя;</li>
 <li>Вход в личный кабинет;</li>
@@ -353,7 +389,7 @@ x_{cos} = \cos \left( 2\pi * \frac{x}{P} \right)
 <li>Возможность создания и редактирования пользователей черных списков стран и доменов.</li>
 </ul>
 <p><strong>Вывод по параграфу 2.2</strong></p>
-<p>В ходе проектирования клиентской части системы был обоснован выбор разработки кроссплатформенного мобильного приложения с использованием технологии React Native. Предложен перечень функционала, который необходимо реализовать в данном блоке программного комплекса.</p>
+<p>Таким образом, реализация клиентской части в виде мобильного приложения позволяет существенно повысить удобство взаимодействия пользователя с системой за счет возможности оперативного управления черными списками и просмотра информации о сетевой активности. В ходе проектирования клиентской части системы был обоснован выбор разработки кроссплатформенного мобильного приложения с использованием технологии React Native. Предложен перечень функционала, который необходимо реализовать в данном блоке программного комплекса.</p>
 <p><strong>Вывод по второй главе</strong></p>
 <p>В ходе проектирования архитектуры многоуровневой системы защиты были выполнены следующие работы: 1. Спроектирована серверная архитектура, включающая OpenVPN для изолированного перехвата пользовательского трафика, базу данных SQLite для структурированного хранения журналов событий и REST API для обмена данными с клиентской частью; 2. Определен конвейер анализа сетевого трафика с использование инструмента Zeek и его расширений; 3. Разработана подсистема поведенческого профилирования, работающая на основе алгоритма машинного обучения без учителя; 4. Сформулированы требования к клиентской части и спроектирован функционал кроссплатформенного мобильного приложения;</p>
 <p>Спроектированная архитектура многоуровневой системы защиты позволяет создать комплексное решение, объединяющее методы статического анализа и машинного обучения для эффективного мониторинга трафика и защиты пользователей от вредоносной сетевой активности.</p>
@@ -362,6 +398,9 @@ x_{cos} = \cos \left( 2\pi * \frac{x}{P} \right)
 <div id="refs" class="references csl-bib-body" data-entry-spacing="0" role="list">
 <div id="ref-trigonometry_coding" class="csl-entry" role="listitem">
 <div class="csl-left-margin">1. </div><div class="csl-right-inline">Improving Time Series Prediction Models Using Cyclic Features Encoding in Neural Networks [Электронный ресурс]. Medium. URL: <a href="https://medium.com/@dhanyahari07/improving-time-series-prediction-models-using-cyclic-features-encoding-in-neural-networks-0eebef307fc2">https://medium.com/@dhanyahari07/improving-time-series-prediction-models-using-cyclic-features-encoding-in-neural-networks-0eebef307fc2</a> (дата обращения: 10.10.2026).</div>
+</div>
+<div id="ref-stat_usage_phones" class="csl-entry" role="listitem">
+<div class="csl-left-margin">2. </div><div class="csl-right-inline">Доля рынка трафика с мобильных устройств в сравнении с настольными компьютерами и планшетами [Электронный ресурс]. Similarweb. URL: <a href="https://www.similarweb.com/ru/platforms/">https://www.similarweb.com/ru/platforms/</a> (дата обращения: 10.10.2026).</div>
 </div>
 </div>
 </section>
