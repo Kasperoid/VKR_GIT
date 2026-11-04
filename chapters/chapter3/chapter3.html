@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru" xml:lang="ru"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ И ТЕСТИРОВАНИЕ МНОГОУРОВНЕВОЙ СИСТЕМЫ ЗАЩИТЫ ПОЛЬЗОВАТЕЛЕЙ ОТ ВРЕДОНОСНОЙ СЕТЕВОЙ АКТИВНОСТИ С ИСПОЛЬЗОВАНИЕМ ПОВЕДЕНЧЕСКОГО ПРОФИЛИРОВАНИЯ – Выпускная квалификационная работа</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/chapter3/appendices/appendix_ip_script.html" rel="next">
+<link href="../../chapters/chapter2/chapter2.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-e5b5cae9aad857844e29d3b6dc85a307.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Поиск не дал результатов",
+    "search-matching-documents-text": "Результаты поиска",
+    "search-copy-link-title": "Скопировать ссылку",
+    "search-hide-matches-text": "Скрыть дополнительные результаты",
+    "search-more-match-text": "дополнительный результат в этом документе",
+    "search-more-matches-text": "дополнительных результата(-ов) в этом документе",
+    "search-clear-button-title": "Очистить",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Отменить",
+    "search-submit-button-title": "Найти",
+    "search-label": "Поиск"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Переключить боковую панель навигации" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/chapter3/chapter3.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ И ТЕСТИРОВАНИЕ МНОГОУРОВНЕВОЙ СИСТЕМЫ ЗАЩИТЫ ПОЛЬЗОВАТЕЛЕЙ ОТ ВРЕДОНОСНОЙ СЕТЕВОЙ АКТИВНОСТИ С ИСПОЛЬЗОВАНИЕМ ПОВЕДЕНЧЕСКОГО ПРОФИЛИРОВАНИЯ</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Переключить боковую панель навигации" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Поиск" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Выпускная квалификационная работа</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Поиск"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ВВЕДЕНИЕ</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter1/chapter1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">ТЕОРЕТИКО-МЕТОДИЧЕСКИЕ ОСНОВЫ ПРОЕКТИРОВАНИЯ СИСТЕМЫ ЗАЩИТЫ ОТ ВРЕДОНОСНОЙ СЕТЕВОЙ АКТИВНОСТИ С ИСПОЛЬЗОВАНИЕМ ПОВЕДЕНЧЕСКОГО ПРОФИЛИРОВАНИЯ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter2/chapter2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">РАЗРАБОТКА АРХИТЕКТУРЫ СИСТЕМЫ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/chapter3.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ И ТЕСТИРОВАНИЕ МНОГОУРОВНЕВОЙ СИСТЕМЫ ЗАЩИТЫ ПОЛЬЗОВАТЕЛЕЙ ОТ ВРЕДОНОСНОЙ СЕТЕВОЙ АКТИВНОСТИ С ИСПОЛЬЗОВАНИЕМ ПОВЕДЕНЧЕСКОГО ПРОФИЛИРОВАНИЯ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Приложения</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Переключить раздел">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ip_script.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Cкрипт парсинга status-server.log</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_constants.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Содержимое constants.py</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_collector.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Содержимое collector.py</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_helpers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Содержимое helpers.py</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_trainer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Содержимое trainer.py</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_checker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Содержимое checker.py</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">СОДЕРЖАНИЕ</h2>
+   
+  <ul>
+  <li><a href="#выбор-инструментов-и-среды-разработки-прототипа" id="toc-выбор-инструментов-и-среды-разработки-прототипа" class="nav-link active" data-scroll-target="#выбор-инструментов-и-среды-разработки-прототипа"><span class="header-section-number">3.1</span> Выбор инструментов и среды разработки прототипа</a></li>
+  <li><a href="#настройка-механизмов-перехвата-и-анализа-трафика" id="toc-настройка-механизмов-перехвата-и-анализа-трафика" class="nav-link" data-scroll-target="#настройка-механизмов-перехвата-и-анализа-трафика"><span class="header-section-number">3.2</span> Настройка механизмов перехвата и анализа трафика</a>
+  <ul class="collapse">
+  <li><a href="#настройка-инструмента-openvpn" id="toc-настройка-инструмента-openvpn" class="nav-link" data-scroll-target="#настройка-инструмента-openvpn"><span class="header-section-number">3.2.1</span> Настройка инструмента OpenVPN</a></li>
+  <li><a href="#настройка-анализатора-сетевого-трафика-zeek" id="toc-настройка-анализатора-сетевого-трафика-zeek" class="nav-link" data-scroll-target="#настройка-анализатора-сетевого-трафика-zeek"><span class="header-section-number">3.2.2</span> Настройка анализатора сетевого трафика Zeek</a></li>
+  </ul></li>
+  <li><a href="#конфигурация-модуля-хранения-данных" id="toc-конфигурация-модуля-хранения-данных" class="nav-link" data-scroll-target="#конфигурация-модуля-хранения-данных"><span class="header-section-number">3.3</span> Конфигурация модуля хранения данных</a></li>
+  <li><a href="#создание-модуля-поведенческого-профилирования" id="toc-создание-модуля-поведенческого-профилирования" class="nav-link" data-scroll-target="#создание-модуля-поведенческого-профилирования"><span class="header-section-number">3.4</span> Создание модуля поведенческого профилирования</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ И ТЕСТИРОВАНИЕ МНОГОУРОВНЕВОЙ СИСТЕМЫ ЗАЩИТЫ ПОЛЬЗОВАТЕЛЕЙ ОТ ВРЕДОНОСНОЙ СЕТЕВОЙ АКТИВНОСТИ С ИСПОЛЬЗОВАНИЕМ ПОВЕДЕНЧЕСКОГО ПРОФИЛИРОВАНИЯ</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>В технологическом разделе выполняется практическая реализация прототипа многоуровневой системы защиты пользователей от вредоносной сетевой активности с использованием поведенческого профилирования. Основная задача данного этапа заключается в проверке применимости архитектурных, алгоритмических и концептуальных решений, спроектированных во второй главе. В ходе практической реализации будет описан процесс развертывания серверной инфраструктуры, включающей инструменты изоляции и анализа сетевого трафика, создание интерфейса для клиент-серверного взаимодействия, разработку модуля поведенческого профилирования на основе алгоритмов машинного обучения, а также создание мобильного приложения для пользователей. Завершающим этапом станет комплексное тестирование разработанного прототипа системы для подтверждения корректности ее работы в режиме реального времени.</p>
+<section id="выбор-инструментов-и-среды-разработки-прототипа" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="выбор-инструментов-и-среды-разработки-прототипа"><span class="header-section-number">3.1</span> Выбор инструментов и среды разработки прототипа</h2>
+<p>Для развертывания серверной части программного комплекса был выбран виртуальный выделенный сервер под управлением операционной системы Ubuntu 24.04 LTS. Вычислительные мощности включают 2 ядра процессора, 2048 МБ оперативной памяти и накопитель объемом 40960 МБ. Выбор операционной системы обусловлен ее стабильностью, долгосрочной поддержкой и совместимостью с компонентами разрабатываемой системы. Выделенных аппаратных ресурсов достаточно для обеспечения стабильной маршрутизации трафика, непрерывного анализа сетевого трафика, а также корректной работы клиент-серверного интерфейса и алгоритмов машинного обучения на этапе прототипирования и тестирования системы.</p>
+<p>Для реализации интерфейса взаимодействия клиента с сервером была выбрана платформа Node.js, которая отличается высокой производительностью при работе с операциями ввода-вывода, также имеется возможность применения языка программирования JavaScript и его дополнения TypeScript, что позволяет создавать серверную и клиентскую части в едином стиле. В качестве фреймворка для проектирования выбран Express.js, так как поддерживает подключение к базе данных SQLite, имеет удобный и понятный синтаксис для разработки маршрутизации. В качестве основного языка разработки выбран TypeScript, так как он расширяет возможности JavaScript, добавляя строгую типизацию, следовательно, его использование снижает вероятность возникновения ошибок на этапе написания программного кода.</p>
+<p>Модуль поведенческого профилирования реализован на языке Python. Данный язык обладает развитой экосистемой библиотек для работы с моделями машинного обучения. В процессе программной реализации модуля применяются следующие библиотеки:</p>
+<ul>
+<li><p>sklearn - используется для реализации алгоритма классификации “изолирующий лес”, а также для предварительной нормализации и масштабирования векторов признаков перед их подачей в модель;</p></li>
+<li><p>pandas - применяется для эффективной обработки данных, извлеченных из базы данных;</p></li>
+<li><p>numpy - необходима для выполнения высокопроизводительных математических вычислений;</p></li>
+<li><p>time и datetime - для работы с временными метками;</p></li>
+<li><p>sqlite3 - для подключения к базе данных и выполнения SQL-запросов;</p></li>
+<li><p>os - для создания директории сохранения моделей машинного обучения;</p></li>
+<li><p>json - для упаковки подробной информации об инциденте в формат JSON;</p></li>
+</ul>
+<p>В качестве основной среды разработки модуля поведенческого профилирования использована среда разработки PyCharm, позволяющая эффективно управлять структурой проекта, запускать программный код, отслеживать ошибки и выполнять тестирование.</p>
+<p>В качестве системы хранения информации выбрана реляционная база данных SQLite. Использование инструмента обусловлено применением анализатора сетевого трафика Zeek и его интеграцией с данным решением. Это позволяет средству анализа автоматически экспортировать формируемые журналы событий напрямую в таблицы базы данных без необходимости разработки дополнительных механизмов интеграции.</p>
+<p>Для реализации клиентской части разрабатываемой системы выбрана платформа React Native и язык программирования JavaScript с дополнением TypeScript. Выбор данного механизма создания клиентского интерфейса обусловлен необходимостью разработки мобильного приложения.</p>
+<p>Учитывая многокомпонентность разрабатываемой системы, для создания клиент-серверного интерфейса и мобильного приложения была выбрана среда разработки Visual Studio Code. Такое решение обусловлено широкой экосистемой расширений данной платформы.</p>
+</section>
+<section id="настройка-механизмов-перехвата-и-анализа-трафика" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="настройка-механизмов-перехвата-и-анализа-трафика"><span class="header-section-number">3.2</span> Настройка механизмов перехвата и анализа трафика</h2>
+<p>В данном разделе рассматривается практическая реализация подсистемы захвата сетевых пакетов, которая включает в себя маршрутизацию пользовательских данных через защищенный канал и настройку инструментов глубокого анализа трафика.</p>
+<section id="настройка-инструмента-openvpn" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="настройка-инструмента-openvpn"><span class="header-section-number">3.2.1</span> Настройка инструмента OpenVPN</h3>
+<p>Перехват пользовательского трафика выполняется с помощью средства OpenVPN. Принцип работы данного решения заключается в создании вртуальной частной сети, которая маршрутизирует весь сетевой трафик пользователей через выделенный сетевой интерфейс сервера. Благодаря такому подходу система мониторинга получает доступ для просмотра сетевых пакетов, которые принадлежать исключительно клиентам.</p>
+<p>Для настройки данного средства потребуется:</p>
+<ol type="1">
+<li>Закрытый ключ и сертификат для центра сертификации;</li>
+<li>Серверный закрытый ключ OpenVPN, сертификат открытого ключа, подписанный в центре сертификации;</li>
+<li>Клиентский закрытыый ключ, сертификат открытоого ключа, который также подписан в центре сертификации;</li>
+<li>Дополнительный файл, сформированный в соответствии с протоколом Диффи-Хелламана, который используется для затруднения расшифровки перехваченного трафика при компрометации закрытого ключа злоумышленником;</li>
+<li>Специальныый ключ HMAC как дополнение в целях безопасности, защищающий от различных атак на систему.</li>
+</ol>
+<p>На начальном этапе конфигурации необходимо установить из официальных репозиториев Ubuntu основные пакеты: openvpn и утилиты easy-rsa, которая предназначена для создания и управления собственным центром сертификации и выпуска криптографических ключей и сертификатов.</p>
+<p>Для обеспечения защищиенного соединения создается локальная инфраструктура удостоверяющего центра. С помощью утилиты easy-rsa выполняются следующие криптографические операции:</p>
+<ul>
+<li><p>Инициализация директории с открытыми ключами и генерация корневого сертификата удостоверяющего центра;</p></li>
+<li><p>Создание закрытого ключа и сертификата для самого сервера OpenVPN;</p></li>
+<li><p>Генерация параметров Диффи-Хеллмана для обеспечения безопасного обмена ключами при установке соединения;</p></li>
+<li><p>Генерация дополнительного ключа симметричного шифрования ta.key для защиты от DoS-атак и сканирования портов;</p></li>
+<li><p>Выпуск клиентских сертификатов, необходимых для последющего подключения пользователей.</p></li>
+</ul>
+<p>В директории /etc/openvpn/ был сформирован конфигурационный файл server.conf. В нем заданы ключевые параметры работы виртуальной сети:</p>
+<ul>
+<li><p>Сервер просматривает входящие соединения на определенном IP-адресе. Выбран протокол транспортного уровня TCP и порт 993. Использован виртуальный сетевой интерфейс tun, который работает на сетевом уровне модели OSI;</p></li>
+<li><p>Указаны пути к корневому сертификату, сертификату и ключу сервера, а также параметрам Диффи-Хеллмана. Для аутентификации используется алгоритм SHA512, так же настроен параметр для проверки отозванных сертификатов;</p></li>
+<li><p>Клиентам выделяется подсеть 10.8.0.0/24;</p></li>
+<li><p>После инициализации служба понижает свои привилегии, работая от имени непривилегированного пользователя nobody и группы nogroup.</p></li>
+</ul>
+<p>На рисунке ниже показано содержимое созданного файла server.conf (<a href="#fig-server-conf" class="quarto-xref">рис.&nbsp;<span>3.1</span></a>).</p>
+<div id="fig-server-conf" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-server-conf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/server_conf.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-server-conf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.1— Содержимое файла server.conf
+</figcaption>
+</figure>
+</div>
+<p>После генерации всех необходимых файлов директория openvpn имеет следующую структуру и наполнение (<a href="#fig-opnvpn_directory" class="quarto-xref">рис.&nbsp;<span>3.2</span></a>).</p>
+<div id="fig-opnvpn_directory" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-opnvpn_directory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/openvpn_directory.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-opnvpn_directory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.2— Наполнение директории openvpn
+</figcaption>
+</figure>
+</div>
+<p>Исходя из наполнения директории можно выделить перечень важных файлов и поддиректорий:</p>
+<ul>
+<li>server.conf - основной конфигурационный файл, определяет как сервер принимает подключения, по каким правилам шифрует трафик и какую сеть выделяет клиентам. Содержимое показано ранее (см. <a href="#fig-server-conf" class="quarto-xref">рис.&nbsp;<span>3.1</span></a>);</li>
+<li>ca.crt - корневой сертификат удостоверяющего центра;</li>
+<li>server.crt - сертификат сервера, содержит его публичный ключ и подтверждение подлинности от удостоверяющего центра;</li>
+<li>server.key - закрытый ключ сервера;</li>
+<li>dh.pem - содержит параметры алгоритма Диффи-Хеллмана;</li>
+<li>ta.key и tc.key - предназначены для дополнительного шифрования;</li>
+<li>crl.pem - список отозванных сертификатов;</li>
+<li>ipp.txt - Файл пула IP-адресов. Сервер сохраняет в нем связку между идентификаторами клиентов и выданными ip-адресами, чтобы при переподключении выдавать пользователю тот же IP;</li>
+</ul>
+<p>После настройки инструмента производится проверка статуса работы (<a href="#fig-opnvpn_status" class="quarto-xref">рис.&nbsp;<span>3.3</span></a>)</p>
+<div id="fig-opnvpn_status" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-opnvpn_status-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/ovpn_status.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-opnvpn_status-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.3— Статус работы сервиса
+</figcaption>
+</figure>
+</div>
+<p>Так как подключаться к виртуальной частной сети могут несколько пользователей, то необходимо разделить их трафик для корректного анализа, с этой целью применяется инструмент incrontab и лог-файл status-server.log.</p>
+<ul>
+<li>incrontab - демон, запускающий программы по событиям файловой системы;</li>
+<li>status-server.log - журнал событий, содержащий статистику подключенных клиентов, которая обновляется раз в минуту, данный лог-файл содержит информацию о идентификаторе клиента, его ip-адрес (<a href="#fig-status-server-log" class="quarto-xref">рис.&nbsp;<span>3.4</span></a>).</li>
+</ul>
+<div id="fig-status-server-log" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-status-server-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/status-log.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-status-server-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.4— Содержимое status-server.log
+</figcaption>
+</figure>
+</div>
+<p>На языке программирования Python был разработан скрипт, выполняющий парсинг status-server.log и запись сведений о VPN-пользователях в базу данных SQLite. Выполнение данного скрипта инициируется при изменении файла status-server.log, данное событие отслеживается инструментом incrontab. Логика работы скрипта следующая:</p>
+<ul>
+<li>Если в базе данных для пользователя с соответствующим идентификатором отсутствует информация об его IP-адресе, производится его добавление;</li>
+<li>Если в базе данных для пользователя с соответствующим идентификатором IP-адрес присутствует и совпадает с тем, что расположен в status-server.log, то обновление или добавление новой информации в соответствующую таблицу базы даных не выполняется;</li>
+</ul>
+<p>Код скрипта представлен в <a href="appendices/appendix_ip_script.html" class="quarto-xref"><span>Приложение A</span></a></p>
+</section>
+<section id="настройка-анализатора-сетевого-трафика-zeek" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="настройка-анализатора-сетевого-трафика-zeek"><span class="header-section-number">3.2.2</span> Настройка анализатора сетевого трафика Zeek</h3>
+<p>Для генерации подробных журналов событий о сетевых соединениях используется инструмент Zeek. По умолчанию пакет инструмента не включен в репозиторий Ubuntu по умолчанию, поэтому необходимо добавить репозиторий в APT. После установки и добавление Zeek в системную переменную производится проверка корректности установки (<a href="#fig-zeek-ver" class="quarto-xref">рис.&nbsp;<span>3.5</span></a>).</p>
+<div id="fig-zeek-ver" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zeek-ver-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/zeek-ver.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zeek-ver-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.5— Проверка установки zeek
+</figcaption>
+</figure>
+</div>
+<p>По-умолчанию анализатор просматривает сетевой трафик, проходящий через сетевой интерфейс eth0, однако клиенты подключаются к tun0, поэтому необходимо настроить zeek на прослушивание пакетов пользователей виртуальной частной сети OpenVPN. Для такой настройки необходимо обратиться к файлу node.cfg, который является основным конфигурационным файлом, в нем необходимо указать нужный интерфейс (<a href="#fig-node-cfg" class="quarto-xref">рис.&nbsp;<span>3.6</span></a>).</p>
+<div id="fig-node-cfg" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-node-cfg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/node-cfg.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-node-cfg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.6— Изменение сетевого интерфейса
+</figcaption>
+</figure>
+</div>
+<p>Также следует провести конфигурацию взаимодействия анализатора с базой данных SQLite. Так как инструмент Zeek позволяет создавать большое количество разнообразных журналов событий, то возникает проблема нагрузки базы данных информацией из неиспользуемых лог-файлов, создаваемых средством. Таким образом, был написан скрипт zeekDb, позволяющий сохранять данные из следующих источников: conn.log, dns.log, ssl.log, intel.log. На рисунке ниже показан созданный код (<a href="#fig-zeekDb" class="quarto-xref">рис.&nbsp;<span>3.7</span></a>).</p>
+<div id="fig-zeekDb" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zeekDb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/zeekDb.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zeekDb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.7— Взаимодействие с базой данных
+</figcaption>
+</figure>
+</div>
+<p>Функция zeek_init выполняется один раз при старте Zeek. Внутри нее скрипт создает 4 фильтра, которые перехватывают системные логи и направляют их в базу данных. Для каждого фильтра заданы одинаковые параметры:</p>
+<ul>
+<li><p>$writer=Log::WRITER_SQLITE - указывает анализатору использовать модуль записи в SQLite;</p></li>
+<li><p>$path=“путь к базе данных” - указывает путь к файлу базы данных.</p></li>
+</ul>
+<p>Соответственно для каждого из вышеупомянутых лог-файлов создается отдельное правило, для их применения используются функции Log::add_filter.</p>
+<p>Для подключения самописных скриптов и внешних плагинов в Zeek, необходимо внести изменения в главный пользовательский конфигурационный файл local.zeek (<a href="#fig-local-zeek" class="quarto-xref">рис.&nbsp;<span>3.8</span></a>).</p>
+<div id="fig-local-zeek" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-local-zeek-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/local-zeek.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-local-zeek-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.8— Файл local.zeek
+</figcaption>
+</figure>
+</div>
+<p>Для установки пользовательского плагина geoip-conn используется стандартный менеджер пакетов Zeek. После успешной загрузки и сборки необходимо добавить данное расширение в файл local.zeek (<a href="#fig-local-zeek" class="quarto-xref">рис.&nbsp;<span>3.8</span></a>).</p>
+<p>Также имеется расширение zeek-intelligence-feeds, в отличие от предыдущего, оно будет устанавливаться из репозитория системы контроля версий GitHub путем клонирования. После успешного переноса файлов плагина на сервер производится добавление данного подключаемого модуля в настроечный файл local.zeek (<a href="#fig-local-zeek" class="quarto-xref">рис.&nbsp;<span>3.8</span></a>). Стоит обратить внимание на содержимое склонированного репозитория, в нем содержатся перечни известных индикаторов компрометации, поскольку данные списки изменяются несколько раз в день, то создан скрипт zeek_update.sh (<a href="#fig-zeek-update-sh" class="quarto-xref">рис.&nbsp;<span>3.9</span></a>).</p>
+<div id="fig-zeek-update-sh" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zeek-update-sh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/zeek-update-sh.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zeek-update-sh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.9— Содержимое файла zeek_update.sh
+</figcaption>
+</figure>
+</div>
+<p>Данный код принудительно обновляет базу индикаторов компрометации до самой актуальной версии из репозитория. Чтобы обеспечить выполнение скрипта 1 раз в 24 часа необходимо добавить задачу в планировщик cron (<a href="#fig-zeek-update-cron" class="quarto-xref">рис.&nbsp;<span>3.10</span></a>).</p>
+<div id="fig-zeek-update-cron" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zeek-update-cron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/cron_zeek_sh.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zeek-update-cron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.10— Добавление скрипта в планировщик
+</figcaption>
+</figure>
+</div>
+<p>В качестве проверки на успешную установку производится запуск zeek и проверка его статуса (<a href="#fig-zeek-start" class="quarto-xref">рис.&nbsp;<span>3.11</span></a>).</p>
+<div id="fig-zeek-start" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zeek-start-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/zeek-start.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zeek-start-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.11— Запуск анализатора сетевого трафика zeek
+</figcaption>
+</figure>
+</div>
+<p>При успешной конфигурации плагинов в базе данных SQLite должны появится записи журналов событий, в conn информация о геолокации и в intel данные о подозрительных сетевых пакетах (<span class="citation" data-cites="bd-conn-intel-start">[<a href="#ref-bd-conn-intel-start" role="doc-biblioref"><strong>bd-conn-intel-start?</strong></a>]</span>).</p>
+<div id="bd-conn-intel-start" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="data/intel-conn-start.png" class="img-fluid figure-img"></p>
+<figcaption>Журнал событий conn и intel. Проверка плагинов</figcaption>
+</figure>
+</div>
+<p>На рисунке выше видно, что при подключении клиента локальной частной сети с ip-адресом 10.8.0.8 в базе данных отображается информация из журналов событий, также в таблице conn добавлена информация о геолокации, что свидетельствует о работе geoip-conn. Помимо этого стоит обратить внимание на intel, в котором имеются записи о подозрительных подключениях, данный факт говорит о работе расширения zeek-intelligence-feeds.</p>
+</section>
+</section>
+<section id="конфигурация-модуля-хранения-данных" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="конфигурация-модуля-хранения-данных"><span class="header-section-number">3.3</span> Конфигурация модуля хранения данных</h2>
+<p>В базе данных созданы 12 таблиц, ниже производится описание каждой из них.</p>
+<p>Хранение базовой информации профиля пользователя вирутальной частной сети производится в vpn_users, данная таблица содержит следующие поля:</p>
+<ul>
+<li><p>id (первичный ключ, целочисленное значение) - индивидуальный идентификатор пользователя, присваивается клиенту в момент регистрации;</p></li>
+<li><p>ip_addr (первичный ключ, строковое значение) - ip-адрес, выданный пользователю регистрации;</p></li>
+<li><p>username (строковое значение) - придуманное клиентом имя, которое отображается в системе;</p></li>
+<li><p>hash_password (строковое значение) - захешированный пароль пользователя, благодаря которому клиент может входить в личный кабинет;</p></li>
+<li><p>role (строковое значение) - роль клиента в системе: администратор или узел;</p></li>
+<li><p>short_code (целочисленное значение) - короткий пин-код для быстрого входа в личный кабинет;</p></li>
+</ul>
+<p>В разрабатываемой системе предусмотрен функционал добавления черных списков стран, ввиду этого создана таблица block_countries. Ниже представлены ее поля:</p>
+<ul>
+<li><p>id (первичный ключ, целочисленное значение) - индивидуальный идентификатор черного списка стран, выдается автоматически при создании;</p></li>
+<li><p>clientId (внешний ключ, целочисленные значение) - индивидуальный идентификатор пользователя виртуальной частной сети, связывает таблицу с vpn_users;</p></li>
+<li><p>countries_codes (строкое значение) - код страны.</p></li>
+</ul>
+<p>Также стоит обратить внимание на таблицу block_domains, в которой описываются домены, добавленные в черный список, ниже представлены ее свойства:</p>
+<ul>
+<li><p>id (первичный ключ, целочисленное значение) - индивидуальный иденитификатор черного списка доменов, выдается автоматически при создании;</p></li>
+<li><p>clientId (внешний ключ, целочисленное значение) - индивидуальный идентификатор пользователя виртуальной частной сети, связывает таблицу с vpn_users;</p></li>
+<li><p>domains (строковое значение) - наименование домена.</p></li>
+</ul>
+<p>В системе реализована возможность просмотра информации о сетевом трафике пользователя с ролью “узел” клиентом “администратор”, поэтому создана таблица node_depends, содержащая информацию о связях между членами сети. Ниже представлено описание свойств:</p>
+<ul>
+<li><p>id (первичный ключ, целочисленное значение) - индивидуальный идентификатор связи между пользователями, автоматически формируется при регистрации новой зависимости;</p></li>
+<li><p>node_id (внешний ключ, целочисленное значение) - индивидуальный идентификатор клиента с ролью “узел”;</p></li>
+<li><p>admin_id (внешний ключ, целочисленное значение) - индивидуальный идентификатор пользоваетеля с ролью “администратор”.</p></li>
+</ul>
+<p>Для информирования и оповещения пользователя о событиях в системе, разработана таблица notifications, в которой содержатся уведомления для конкретного клиента. Ниже описаны свойства:</p>
+<ul>
+<li><p>id (первичный ключ, целочисленное значение) - индивидуальный идентификатор уведомления, формируется при регистрации нового сообщения;</p></li>
+<li><p>client_id (внешний ключ, целочисленное значение) - индивидуальный идентификатор клиента, которому адресовано конкретное извещение, необходим для связи с таблицой vpn_users;</p></li>
+<li><p>type (строковое значение) - тип уведомления;</p></li>
+<li><p>payload (строковое значение) - текст сообщения;</p></li>
+<li><p>is_read (целочисленное значение) - флаг прочтения уведомления, где 0 - не просмотрено, 1 - прочтено;</p></li>
+</ul>
+<p>Хранение информации о метаданных зашифрованного соединения производится в таблице ssl, которая содержит следующие поля:</p>
+<ul>
+<li>ts (дробное значение) - временная метка (timestamp) события;</li>
+<li>uid (первичный ключ, строковое значение) - уникальный идентификатор соединения;</li>
+<li>id.orig_h (внешний ключ, строковое значение, не null) - IP-адрес инициатора (клиента) соединения, позволяет установить связь с таблицей vpn_users;</li>
+<li>id.orig_p (целочисленное значение) - порт инициатора соединения;</li>
+<li>id.resp_h (строковое значение) - IP-адрес отвечающего узла (сервера);</li>
+<li>id.resp_p (целочисленное значение) - порт отвечающего узла;</li>
+<li>version (строковое значение) - версия протокола;</li>
+<li>cipher (строковое значение) - используемый набор шифров;</li>
+<li>curve (строковое значение) - используемая эллиптическая кривая;</li>
+<li>server_name (строковое значение) - имя сервера;</li>
+<li>resumed (логическое значение) - флаг возобновления предыдущей сессии;</li>
+<li>last_alert (строковое значение) - последнее сообщение об ошибке в сессии;</li>
+<li>next_protocol (строковое значение) - согласованный протокол прикладного уровня;</li>
+<li>established (логическое значение) - флаг успешного установления SSL-соединения;</li>
+<li>ssl_history (строковое значение) - история состояний SSL-соединения;</li>
+<li>cert_chain_fps (строковое значение) - отпечатки цепочки сертификатов сервера;</li>
+<li>client_cert_chain_fps (строковое значение) - отпечатки цепочки сертификатов клиента;</li>
+<li>subject (строковое значение) - субъект сертификата сервера;</li>
+<li>issuer (строковое значение) - издатель сертификата сервера;</li>
+<li>client_subject (строковое значение) - субъект сертификата клиента;</li>
+<li>client_issuer (строковое значение) - издатель сертификата клиента;</li>
+<li>sni_matches_cert (логическое значение) - флаг соответствия имени сервера заявленному в сертификате;</li>
+<li>validation_status (строковое значение) - результат проверки валидности сертификата.</li>
+</ul>
+<p>Информация из журнала событий conn.log анализатор сетевого трафика zeek хранится в соответствующей таблице conn, описание полей представлено ниже:</p>
+<ul>
+<li>ts (дробное значение) - временная метка начала соединения;</li>
+<li>uid (первичный ключ, строковое значение) - уникальный идентификатор сетевого соединения;</li>
+<li>id.orig_h (внешний ключ, строковое значение) - IP-адрес инициатора соединения, также необходим для связи с таблицей vpn_users;</li>
+<li>id.orig_p (целочисленное значение) - порт инициатора соединения;</li>
+<li>id.resp_h (строковое значение) - IP-адрес отвечающего узла;</li>
+<li>id.resp_p (целочисленное значение) - порт отвечающего узла;</li>
+<li>proto (строковое значение) - транспортный протокол;</li>
+<li>service (строковое значение) - идентифицированный протокол прикладного уровня;</li>
+<li>duration (дробное значение) - длительность соединения в секундах;</li>
+<li>orig_bytes (целочисленное значение) - количество байт полезной нагрузки, отправленных инициатором;</li>
+<li>resp_bytes (целочисленное значение) - количество байт полезной нагрузки, отправленных отвечающим узлом;</li>
+<li>conn_state (строковое значение) - статус состояния соединения;</li>
+<li>local_orig (логическое значение) - флаг принадлежности инициатора к локальной сети;</li>
+<li>local_resp (логическое значение) - флаг принадлежности отвечающего узла к локальной сети;</li>
+<li>missed_bytes (целочисленное значение) - количество потерянных в соединении байт;</li>
+<li>history (строковое значение) - история состояний соединения в виде символьных кодов;</li>
+<li>orig_pkts (целочисленное значение) - количество пакетов от инициатора;</li>
+<li>orig_ip_bytes (целочисленное значение) - общий объем IP-трафика (в байтах) от инициатора;</li>
+<li>resp_pkts (целочисленное значение) - количество пакетов от отвечающего узла;</li>
+<li>resp_ip_bytes (целочисленное значение) - общий объем IP-трафика (в байтах) от отвечающего узла;</li>
+<li>tunnel_parents (строковое значение) - идентификаторы туннелей, внутри которых инкапсулировано данное соединение;</li>
+<li>geo.orig.* и geo.resp.* (строковые, целочисленные и дробные значения) - набор полей геопозиционирования (страна, регион, город, координаты) и данных автономных систем (название организации) для инициатора и отвечающего узла соответственно.</li>
+</ul>
+<p>Данные из лог-файла dns, генерируемый инструментом zeek, сохраняются в одноименной таблице базы данных:</p>
+<ul>
+<li>ts (дробное значение) - временная метка DNS-запроса;</li>
+<li>uid (первичный ключ, строковое значение) - уникальный идентификатор сетевого соединения;</li>
+<li>id.orig_h (внешний ключ, строковое значение) - IP-адрес клиента, используется для связи с таблицей vpn_users;</li>
+<li>id.orig_p (целочисленное значение) - порт клиента;</li>
+<li>id.resp_h (строковое значение) - IP-адрес DNS-сервера;</li>
+<li>id.resp_p (целочисленное значение) - порт DNS-сервера;</li>
+<li>proto (строковое значение) - транспортный протокол;</li>
+<li>trans_id (целочисленное значение) - идентификатор транзакции DNS;</li>
+<li>rtt (дробное значение) - время приема-передачи;</li>
+<li>query (строковое значение) - доменное имя, о котором запрашивается информация;</li>
+<li>qclass (целочисленное значение) - класс запроса;</li>
+<li>qclass_name (строковое значение) - строковое обозначение класса;</li>
+<li>qtype (целочисленное значение) - тип запроса;</li>
+<li>qtype_name (строковое значение) - строковое обозначение типа запроса;</li>
+<li>rcode (целочисленное значение) - код ответа сервера;</li>
+<li>rcode_name (строковое значение) - строковое обозначение кода ответа;</li>
+<li>AA (логическое значение) - флаг авторитетного ответа;</li>
+<li>TC (логическое значение) - флаг усеченного сообщения ;</li>
+<li>RD (логическое значение) - флаг запроса рекурсии;</li>
+<li>RA (логическое значение) - флаг доступности рекурсии;</li>
+<li>Z (целочисленное значение) - зарезервированное поле;</li>
+<li>answers (строковое значение) - полученные ответы на запрос;</li>
+<li>TTLs (строковое значение) - время жизни записей;</li>
+<li>rejected (логическое значение) - флаг отклонения DNS-запроса сервером.</li>
+</ul>
+<p>Для хранения событий обнаружения индикаторов компрометации из лог-файла intel, сформирована одноименная таблица со следующими свойствами:</p>
+<ul>
+<li>ts (дробное значение) - временная метка обнаружения индикатора;</li>
+<li>uid (первичный ключ, строковое значение) - уникальный идентификатор соединения, в котором найдено совпадение;</li>
+<li>id.orig_h (внешний ключ, строковое значение) - исходный IP-адрес, создает связь с таблицей vpn_users;</li>
+<li>id.orig_p (целочисленное значение) - порт источника;</li>
+<li>id.resp_h (строковое значение) - целевой IP-адрес;</li>
+<li>id.resp_p (целочисленное значение) - целевой порт;</li>
+<li>seen.indicator (строковое значение) - зафиксированный индикатор компрометации;</li>
+<li>seen.indicator_type (строковое значение) - тип индикатора;</li>
+<li>seen.where (строковое значение) - контекст обнаружения;</li>
+<li>seen.node (строковое значение) - имя узла, зафиксировавшего совпадение;</li>
+<li>matched (строковое значение) - списки или категории, с которыми совпал индикатор;</li>
+<li>sources (строковое значение) - источники данных киберразведки;</li>
+<li>fuid (строковое значение) - уникальный идентификатор файла, если индикатор связан с файлом;</li>
+<li>file_mime_type (строковое значение) - MIME-тип обнаруженного файла;</li>
+<li>file_desc (строковое значение) - описание файла;</li>
+<li>checked (логическое значение) - флаг завершения проверки индикатора;</li>
+<li>cif.tags (строковое значение) - теги из системы Collective Intelligence Framework (далее CIF);</li>
+<li>cif.confidence (дробное значение) - уровень достоверности индикатора по данным CIF;</li>
+<li>cif.source (строковое значение) - источник данных CIF;</li>
+<li>cif.description (строковое значение) - описание угрозы из базы CIF;</li>
+<li>cif.firstseen (строковое значение) - дата первого обнаружения индикатора;</li>
+<li>cif.lastseen (строковое значение) - дата последнего обнаружения индикатора.</li>
+</ul>
+<p>Модуль поведенческого профилирования при детектировании подозрительной активности клиента формирует событие, поэтому была сформирована таблица behavioral_alerts для хранения этих уведомлений. Ниже представлены ее поля:</p>
+<ul>
+<li><p>id (первичный ключ, целочисленное значение) - индивидуальный идентификатор уведомления;</p></li>
+<li><p>user_id (внешний ключ, целочисленное значение) - индивидуальный идентификатор клиента, необходим для связи с таблицей vpn_users;</p></li>
+<li><p>timestamp (значение типа timestamp) - дата и время создания сообщения;</p></li>
+<li><p>weekday (целочисленное значение) - день недели, представлен в виде значения от 0 до 6, где 0 - понедельник, 6 - воскресенье;</p></li>
+<li><p>slot (целочисленное значение) - часть дня, пиредставлен в виде значения от 0 до 3, где 0 - утро, 3 - ночь;</p></li>
+<li><p>anomaly_score (дробное значение) - показатель аномалии от 0 до 1, где 0 - сетевой трафик полностью соответствует поведению пользователя, 1 - имеются серьезные отклонения;</p></li>
+<li><p>details (строковое значение) - текст сообщения.</p></li>
+</ul>
+<p>Для хранения информации о пользователе сети, которая в дальнейшем будет использована в обучении модели машинного обучения, создана таблица user_window_stats:</p>
+<ul>
+<li><p>id (первичный ключ, целочисленное значение) - индивидуальный идентификатор окна сбора информации;</p></li>
+<li><p>user_id (внешний ключ, целочисленное значение) - индивидуальный идентификатор клиента сети, необходим для связи с таблицей vpn_users;</p></li>
+<li><p>window_start (значение типа timestamp) - дата и время начала сбора данных о трафике;</p></li>
+<li><p>weekday (целочисленное значение) - день недели, представлен в виде значения от 0 до 6, где 0 - понедельник, 6 - воскресенье;</p></li>
+<li><p>slot (целочисленное значение) - часть дня, пиредставлен в виде значения от 0 до 3, где 0 - утро, 3 - ночь;</p></li>
+<li><p>total_conns (целочисленное значение) - общее число подключений;</p></li>
+<li><p>unique_dst_ips (целочисленное значение) - количество уникальных ip-адресов назначений;</p></li>
+<li><p>unique_dst_ports (целочисленное значение) - количество уникальных портов назначений;</p></li>
+<li><p>orig_bytes (целочисленное значение) - сумма полученных байт;</p></li>
+<li><p>resp_bytes (целочисленное значение) - сумма отправленных байт;</p></li>
+<li><p>avg_duration (дробное значение) - среднее время соединения;</p></li>
+<li><p>conns_per_sec (дробное значение) - количество соединений в секунду;</p></li>
+<li><p>created_at (значение типа timestamp) - дата и время создания записи;</p></li>
+</ul>
+<p>В результате обучения модели машинного обучения создается файл с ее моделью, для сохранения информации по этому элементу создана таблица model_metadata:</p>
+<ul>
+<li><p>id (первичный ключ, целочисленное значение) - индивидуальный идентификатор версии модели;</p></li>
+<li><p>user_id (внешний ключ, целочисленное значение) - индивидуальный идентификатор клиента сети, необходим для связи с таблицей vpn_users;</p></li>
+<li><p>model_path (строковое значение) - путь в файловой системе сервера до обученной модели под конкретного пользователя;</p></li>
+<li><p>scaler_path (строковое значение) - путь к файлу скалера;</p></li>
+<li><p>training_date (timestamp значение) - дата последнего обучения модели машинного обучения клиента.</p></li>
+</ul>
+<p>Для обеспечения корректного хранения данных, взаимодействие между таблицами реализовано следующим образом:</p>
+<ul>
+<li><p>Таблица vpn_users соединена с model_metadata связью типа «один-ко-многим» (внешний ключ user_id ссылается на первичный ключ id). Такая связь обусловлена сохранением истории: у одного клиента с течением времени может формироваться и сохраняться несколько версий обученных моделей машинного обучения;</p></li>
+<li><p>Таблица vpn_users соединена с user_window_stats связью типа «один-ко-многим» (внешний ключ user_id ссылается на первичный ключ id). Данный тип связи выбран, поскольку в процессе сбора статистики для одного пользователя генерируется множество срезов сетевого трафика;</p></li>
+<li><p>Таблица vpn_users соединена с behavioral_alerts связью типа «один-ко-многим» (внешний ключ user_id ссылается на первичный ключ id). Это необходимо из-за того, что модуль профилирования может фиксировать несколько событий с подозрительным поведением для одного клиента;</p></li>
+<li><p>Таблица vpn_users соединена с notifications связью типа «один-ко-многим» (внешний ключ client_id ссылается на первичный ключ id). Связь гарантирует, что одному пользователю может быть адресовано неограниченное количество системных уведомлений с возможностью индивидуального отслеживания статуса их прочтения;</p></li>
+<li><p>Таблица vpn_users соединена с node_depends связью типа «один-ко-многим», (внешние ключи node_id и admin_id ссылаются на первичный ключ id). Такая структура обусловлена тем, что один администратор может мониторить множество узлов, а один узел может контролироваться несколькими администраторами;</p></li>
+<li><p>Таблица vpn_users соединена с block_countries связью типа «один-ко-многим» (внешний ключ clientId ссылается на первичный ключ id). У одного пользователя может быть несколько стран в черном списке;</p></li>
+<li><p>Таблица vpn_users соединена с block_domains связью типа «один-ко-многим» (внешний ключ clientId ссылается на первичный ключ id). Аналогично предыдущей, эта связь позволяет задавать множество запрещенных доменных имен для одного конкретного клиента;</p></li>
+<li><p>Таблица vpn_users соединена с conn связью типа «один-ко-многим» (внешний ключ id.orig_h ссылается на первичный ключ ip_addr). Один клиент генерирует тысячи сетевых соединений;</p></li>
+<li><p>Таблица vpn_users соединена с dns связью типа «один-ко-многим» (внешний ключ id.orig_h ссылается на первичный ключ ip_addr). В рамках работы одного клиента отправляется множество DNS-запросов;</p></li>
+<li><p>Таблица vpn_users соединена с ssl связью типа «один-ко-многим» (внешний ключ id.orig_h ссылается на первичный ключ ip_addr). Один пользователь инициирует множество ssl-сессий;</p></li>
+<li><p>Таблица vpn_users соединена с intel связью типа «один-ко-многим» (внешний ключ id.orig_h ссылается на первичный ключ ip_addr). Эта связь обусловлена тем, что в трафике одного пользователя может быть зафиксировано множество сетевых соединений с обнаруженными индикаторами компрометации.</p></li>
+</ul>
+<p>Исходя из описаний связей и таблиц базы данных, сформирована общая схема (<a href="#fig-db-scheme" class="quarto-xref">рис.&nbsp;<span>3.12</span></a>).</p>
+<div id="fig-db-scheme" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-db-scheme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/db-scheme.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-db-scheme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.12— Схема базы данных
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="создание-модуля-поведенческого-профилирования" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="создание-модуля-поведенческого-профилирования"><span class="header-section-number">3.4</span> Создание модуля поведенческого профилирования</h2>
+<p>Модуль поведенческого профилирования состоит из пяти взаимосвязанных скриптов, которые в совокупности образуют полный цикл обработки данных, начиная от сбора статистики, заканчивая машинным обучением и выявлением аномалий в реальном времени. Ниже приведена таблица с описанием каждого файла (<a href="#tbl-ml-funcs" class="quarto-xref">табл.&nbsp;<span>3.1</span></a>).</p>
+<div id="tbl-ml-funcs" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ml-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Таблица&nbsp;3.1— Описание скриптов из модуля поведенческого профилирования
+</figcaption>
+<div aria-describedby="tbl-ml-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 17%">
+<col style="width: 53%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Наименование</th>
+<th style="text-align: left;">Назначение</th>
+<th style="text-align: left;">Выполняемые функции</th>
+<th style="text-align: left;">Используемые библиотеки</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">constants.py (см. <a href="appendices/appendix_ml_constants.html" class="quarto-xref"><span>Приложение B</span></a>)</td>
+<td style="text-align: left;">Хранение глобальных параметров системы</td>
+<td style="text-align: left;">Централизованное хранение пути к базе данных SQLite, позволяет легко изменять расположение источника без необходимости редактирования каждого скрипта по отдельности</td>
+<td style="text-align: left;">Не использует сторонних библиотек</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">collector.py (см. <a href="appendices/appendix_ml_collector.html" class="quarto-xref"><span>Приложение C</span></a>)</td>
+<td style="text-align: left;">Сбор статистики, формирование исторических данных для обучения модели машинного обучения</td>
+<td style="text-align: left;"><p>Функция collector определяет текущее время и вычисляет временное окно за последние 6 часов.</p>
+<p>Запрашивает из базы данных список пользователей VPN, для которых еще не была обучена поведенческая модель.</p>
+<p>Для каждого такого пользователя агрегитрует сетевой трафик из таблицы conn и dns за последние 6 часов.</p>
+<p>Сохраняет агрегированную статистику в таблицу user_window_stats для последующего использования при обучении</p></td>
+<td style="text-align: left;"><p>sqlite3 - для подключения к базе данных и выполнения SQL-запросов</p>
+<p>time и datetime - для работы с временными метками, вычисления 6-часового интервала и извлечения текущего дня недели и часа.</p></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">helpers.py (см. <a href="appendices/appendix_ml_helpers.html" class="quarto-xref"><span>Приложение D</span></a>)</td>
+<td style="text-align: left;">Вспомогательный модуль. Преобразует сырую статистику в нормализованный вектор признаков для алгоритмов машинного обучения</td>
+<td style="text-align: left;"><p>Функция get_user_history_rates извлекает исторические данные пользователя из таблицы user_window_stats.</p>
+<p>Переводит абсолютные значения в скорость (например, количество событий в секунду).</p>
+<p>Формирует цикличеаские признаки.</p>
+<p>Возвращает готовый массив признаков</p></td>
+<td style="text-align: left;"><p>sqlite3 - для подключения к базе данных и выполнения SQL-запросов</p>
+<p>pandas - для загрузки результатов SQL-запроса в датафрейм</p>
+<p>numpy - для вычисления значений тригонометрических функций</p></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">trainer.py (см. <a href="appendices/appendix_ml_trainer.html" class="quarto-xref"><span>Приложение E</span></a>)</td>
+<td style="text-align: left;">Создает индивидуальную модель машинного обучения для каждого пользователя</td>
+<td style="text-align: left;"><p>Функция user_train находит всех активных пользователей и запускает для них процес обучения</p>
+<p>Функция train_user_model запрашивает подготовленные исторические данные, используя модуль helpers.py</p>
+<p>Обучает модель изолирующий лес</p>
+<p>Сохраняет обученную модуль и скалер в файловую систему сервера</p>
+<p>Записывает путь к сохраненной модели в таблицу model_metadata</p></td>
+<td style="text-align: left;"><p>os - для создания директории сохранения моделей</p>
+<p>sqlite3 - для запросов к базе данных и сохроанения путей к моделям</p>
+<p>sklearn.ensemble.IsolationForest - основной алгоритм машинного обучения для поиска аномалий</p>
+<p>sklearn.preprocessing.StandardScaler - для стандартизации входных данных</p>
+<p>joblib - для сохранения файла обученной модели и скейлера</p></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">checker.py (см см. <a href="appendices/appendix_ml_checker.html" class="quarto-xref"><span>Приложение F</span></a>)</td>
+<td style="text-align: left;">В режиме реального времени проверяет текущий трафик пользователей на предмет отклонений от их профиля</td>
+<td style="text-align: left;"><p>Функция user_check определяет список активных пользователей за последние 5 минут</p>
+<p>Функция checker собирает статистику сетевой активности конкретного пользователя за последние 5 минут за таблиц conn и dns</p>
+<p>Расчитывает текущие сетевые параметры трафика</p>
+<p>Загружает ранее обученную модель и скейлер из файла, путь к которому расположен в таблице model_metadata</p>
+<p>Масштабирует новые данные и передает их в модель для предсказания</p>
+<p>Модель машинного обучения сопоставляет текущий трафик с профилем пользователя, возвращая значение от 1 до -1, где 1 - норма, а -1 - абсолютное отклонение. Программный порог со значением &lt;= -0.5 служит триггером для фиксации этого отрицательного ответа. При срабатывании условия система автоматически сохраняет предупреждение об инциденте в таблицу behavioral_alerts</p></td>
+<td style="text-align: left;"><p>sqlite3 - для запросов к базе данных</p>
+<p>pandas и numpy - для трансформации сырых признаков в массивы, пригодные для подачи на вход модели машинного обучения, а также для расчета циклических признаков</p>
+<p>joblib - для загрузки в память обученной модели</p>
+<p>json - для упаковки подробной информации об инциденте в формат JSON.</p>
+<p>datetime - для определения текущего времени, вычисления окна в 5 минут</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Скопировано");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Скопировано");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/chapter2/chapter2.html" class="pagination-link" aria-label="РАЗРАБОТКА АРХИТЕКТУРЫ СИСТЕМЫ">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">РАЗРАБОТКА АРХИТЕКТУРЫ СИСТЕМЫ</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/chapter3/appendices/appendix_ip_script.html" class="pagination-link" aria-label="Cкрипт парсинга status-server.log">
+        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Cкрипт парсинга status-server.log</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

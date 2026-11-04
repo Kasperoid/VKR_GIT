@@ -56,6 +56,7 @@ div.csl-indent {
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
+<link href="../../chapters/chapter3/chapter3.html" rel="next">
 <link href="../../chapters/chapter1/chapter1.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -179,6 +180,59 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">РАЗРАБОТКА АРХИТЕКТУРЫ СИСТЕМЫ</span></span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/chapter3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ И ТЕСТИРОВАНИЕ МНОГОУРОВНЕВОЙ СИСТЕМЫ ЗАЩИТЫ ПОЛЬЗОВАТЕЛЕЙ ОТ ВРЕДОНОСНОЙ СЕТЕВОЙ АКТИВНОСТИ С ИСПОЛЬЗОВАНИЕМ ПОВЕДЕНЧЕСКОГО ПРОФИЛИРОВАНИЯ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Приложения</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Переключить раздел">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ip_script.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Cкрипт парсинга status-server.log</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_constants.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Содержимое constants.py</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_collector.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Содержимое collector.py</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_helpers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Содержимое helpers.py</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_trainer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Содержимое trainer.py</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/chapter3/appendices/appendix_ml_checker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Содержимое checker.py</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -318,10 +372,13 @@ window.Quarto = {
 <h4 data-number="2.1.5.1" class="anchored" data-anchor-id="модуль-сбора-статистики"><span class="header-section-number">2.1.5.1</span> Модуль сбора статистики</h4>
 <p>Для формирования базовой линии нормального поведения пользователя применяется модуль сбора статики, который необходим для излечения сырых записей о сетевых соединениях из соответствующих таблиц базы данных и агрегирования их в фиксированные исторические окна размером в 6 часов. В процессе сборе вычисляются следующие абсолютные метрики:</p>
 <ul>
-<li>Общее количество соединений;</li>
-<li>Объем переданного и полученного трафика в байтах;</li>
-<li>Количество уникальных IP-адресов и портов назначения;</li>
-<li>Средняя длительность сессии.</li>
+<li>Общее количество соединений - резкий рост количества сетевых соединений может сигнализировать о применении DDoS-атаки или попытке брутфорса;</li>
+<li>Объем переданного и полученного трафика в байтах - рост исходящего трафика может сигнализировать о краже данных, то есть пересылка информации на удаленный сервер, в свою очередь увеличение входящего трафика может указывать на загрузку вредоносной нагрузки;</li>
+<li>Количество уникальных IP-адресов и портов назначения - большое число обращений к уникальным ip-адресам указывает на попытку поиска других узлов в сети;</li>
+<li>Средняя длительность сессии - аномально длительные и непрерывные сессии характерны для поддержания каналов связи с командным сервером злоумышленника, с другой стороны короткие соединения характерны для сетевого сканирования;</li>
+<li>Общее количество DNS-запросов - резкий рост количества образений к DNS-серверу является индикатором DNS-туннелирования;</li>
+<li>Количество уникальных доменов - нетипично большое число запросов к разнообразным новым сетевым адресам часто указывает на активность вредоносного программного обеспечения. Зараженные устройства могут использовать специальные алгоритмы, которые ежедневно создают тысячи случайных адресов для поиска сервера злоумышленника и связи с ним. Из-за этого в сетевом трафике появляется множество уникальных имен, которые ранее не встречались;</li>
+<li>Количество ошибок NXDOMAIN - данный показатель напрямую связан с предыыдущим. Так как вредоносные программы генерируют адреса случайным образом, злоумышленники физически не могут зарегистрировать их все, следовательно, на все несуществующие dns приходит соответствующая ошибка.</li>
 </ul>
 <p>Извлеченные за данный временной интервал данные сохраняются в отдельную таблицу базы данных с привязкой к конкретному дню недели и временному слоту. Перед передачей данных в алгоритм машинного обучения они проходят обязательный этап математической обработки. Система обучается на больших исторических интервалах длинной по 6 часов, однако при этом мониторинг текущего трафика в реальном времени происходит короткими отрезками, например, каждые 5 минут, следовательно, алгоритм может ошибочно классифицировать 5-минутный отрезок трафика как аномалию из-за того, что итоговые цифры оказались намного меньше тех, что ему были предоставлены при обучении. Для решения образовавшейся проблемы система переводит абсолютные значения в формат интенсивности - общее количество делится на длину временного окна в секундах. В итоге такой подход позволяет модели машинного обучения адекватно оценивать плотность и характер сетевой активности пользователя вне зависимости от того, за какой временной промежуток она была собрана.</p>
 <p>Особое внимание в процессе подготовки данных уделяется обработке временного контекста. Традиционное представление времени в виде порядковых номеров создает проблему для алгоритмов машинного обучения, например, дню недели “понедельник” соответствует числовое значение 1, а “воскресенье” - 7, для обучаемой модели данные значения отдалены друг от друга, однако в реальности эти дни недели следуют непрерывно друг за другом. Для устранения данного разрыва применяется метод тригонометрического кодирования циклических признаков - метод, используемый в машинном обучении для представления циклических данных, таких как временные ряды или периодические признаки <span class="citation" data-cites="trigonometry_coding">[<a href="#ref-trigonometry_coding" role="doc-biblioref">1</a>]</span>. Для кодирования циклических данных можно использовать следующие формулы (<a href="#eq-sin" class="quarto-xref"><span>2.1</span></a> - <a href="#eq-cos" class="quarto-xref"><span>2.2</span></a>):</p>
@@ -826,6 +883,9 @@ x_{cos} = \cos \left( 2\pi * \frac{x}{P} \right)
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../../chapters/chapter3/chapter3.html" class="pagination-link" aria-label="ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ И ТЕСТИРОВАНИЕ МНОГОУРОВНЕВОЙ СИСТЕМЫ ЗАЩИТЫ ПОЛЬЗОВАТЕЛЕЙ ОТ ВРЕДОНОСНОЙ СЕТЕВОЙ АКТИВНОСТИ С ИСПОЛЬЗОВАНИЕМ ПОВЕДЕНЧЕСКОГО ПРОФИЛИРОВАНИЯ">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ПРАКТИЧЕСКАЯ РЕАЛИЗАЦИЯ И ТЕСТИРОВАНИЕ МНОГОУРОВНЕВОЙ СИСТЕМЫ ЗАЩИТЫ ПОЛЬЗОВАТЕЛЕЙ ОТ ВРЕДОНОСНОЙ СЕТЕВОЙ АКТИВНОСТИ С ИСПОЛЬЗОВАНИЕМ ПОВЕДЕНЧЕСКОГО ПРОФИЛИРОВАНИЯ</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
