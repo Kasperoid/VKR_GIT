@@ -1,0 +1,51 @@
+# Содержимое helpers.py {#sec-ml-helpers .appendix}
+
+``` python
+import sqlite3
+import pandas as pd
+import numpy as np
+from constants import DB_PATH
+
+
+def get_user_history_rates(user_id, window_seconds=21600):
+    query = """
+        SELECT total_conns, unique_dst_ips, unique_dst_ports,
+               orig_bytes, resp_bytes, avg_duration, conns_per_sec,
+               total_dns, unique_dns, nxdomain_dns,
+               weekday, slot, user_id
+        FROM user_window_stats
+        WHERE user_id = ?
+        ORDER BY window_start
+    """
+
+    with sqlite3.connect(DB_PATH) as conn:
+        df = pd.read_sql_query(query, conn, params=(user_id,))
+
+    if len(df) < 10:
+        return None
+
+    df['conns_rate'] = df['total_conns'] / window_seconds
+    df['ips_rate'] = df['unique_dst_ips'] / window_seconds
+    df['ports_rate'] = df['unique_dst_ports'] / window_seconds
+    df['orig_bytes_rate'] = df['orig_bytes'] / window_seconds
+    df['resp_bytes_rate'] = df['resp_bytes'] / window_seconds
+
+    df['dns_rate'] = df['total_dns'] / window_seconds
+    df['unique_dns_rate'] = df['unique_dns'] / window_seconds
+    df['nxdomain_rate'] = df['nxdomain_dns'] / window_seconds
+
+    df['day_sin'] = np.sin(2 * np.pi * df['weekday'] / 7)
+    df['day_cos'] = np.cos(2 * np.pi * df['weekday'] / 7)
+    df['slot_sin'] = np.sin(2 * np.pi * df['slot'] / 4)
+    df['slot_cos'] = np.cos(2 * np.pi * df['slot'] / 4)
+
+    features = [
+        'conns_rate', 'ips_rate', 'ports_rate',
+        'orig_bytes_rate', 'resp_bytes_rate',
+        'avg_duration', 'conns_per_sec',
+        'dns_rate', 'unique_dns_rate', 'nxdomain_rate',
+        'day_sin', 'day_cos', 'slot_sin', 'slot_cos'
+    ]
+
+    return df[features].values
+```

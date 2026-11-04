@@ -1,0 +1,150 @@
+# Содержимое checker.py {#sec-ml-checker .appendix}
+
+``` python
+import sqlite3
+import pandas as pd
+import numpy as np
+import joblib
+import json
+from datetime import datetime
+
+from constants import DB_PATH
+
+
+def checker(user_id, user_ip):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT model_path FROM model_metadata WHERE user_id = ?", (user_id,))
+        row = cursor.fetchone()
+        if not row:
+            return
+        model_path = row[0]
+
+        query = """
+            SELECT 
+                COUNT(*) as total_conns,
+                COUNT(DISTINCT "id.resp_h") as unique_dst_ips,
+                COUNT(DISTINCT "id.resp_p") as unique_dst_ports,
+                COALESCE(SUM(orig_bytes), 0) as orig_bytes,
+                COALESCE(SUM(resp_bytes), 0) as resp_bytes,
+                COALESCE(AVG(duration), 0) as avg_duration
+            FROM conn
+            WHERE "id.orig_h" = ?
+            AND ts >= datetime('now', '-5 minutes');
+        """
+
+        cursor.execute(query, (user_ip,))
+        row = cursor.fetchone()
+
+        total_conns = row[0]
+
+        if total_conns == 0:
+            return
+
+        unique_dst_ips = row[1]
+        unique_dst_ports = row[2]
+        orig_bytes = row[3]
+        resp_bytes = row[4]
+        avg_duration = row[5]
+
+        dns_query = """
+            SELECT 
+                COUNT(*) as total_dns,
+                COUNT(DISTINCT query) as unique_dns,
+                COALESCE(SUM(CASE WHEN rcode_name = 'NXDOMAIN' THEN 1 ELSE 0 END), 0) as nxdomain_dns
+            FROM dns
+            WHERE "id.orig_h" = ?
+            AND ts >= datetime('now', '-5 minutes');
+        """
+        cursor.execute(dns_query, (user_ip,))
+        dns_row = cursor.fetchone()
+
+        total_dns = dns_row[0] if dns_row else 0
+        unique_dns = dns_row[1] if dns_row else 0
+        nxdomain_dns = dns_row[2] if dns_row else 0
+
+        window_seconds = 300
+        conns_per_sec = total_conns / window_seconds
+
+        now = datetime.now()
+        weekday = now.weekday()
+        slot = now.hour // 6
+
+        conns_rate = total_conns / window_seconds
+        ips_rate = unique_dst_ips / window_seconds
+        ports_rate = unique_dst_ports / window_seconds
+        orig_bytes_rate = orig_bytes / window_seconds
+        resp_bytes_rate = resp_bytes / window_seconds
+
+        dns_rate = total_dns / window_seconds
+        unique_dns_rate = unique_dns / window_seconds
+        nxdomain_rate = nxdomain_dns / window_seconds
+
+        day_sin = np.sin(2 * np.pi * weekday / 7)
+        day_cos = np.cos(2 * np.pi * weekday / 7)
+        slot_sin = np.sin(2 * np.pi * slot / 4)
+        slot_cos = np.cos(2 * np.pi * slot / 4)
+
+        features = [
+            conns_rate, ips_rate, ports_rate,
+            orig_bytes_rate, resp_bytes_rate,
+            avg_duration, conns_per_sec,
+            dns_rate, unique_dns_rate, nxdomain_rate,
+            day_sin, day_cos, slot_sin, slot_cos
+        ]
+
+        X_current = np.array([features])
+
+        try:
+            model, scaler = joblib.load(model_path)
+        except Exception as e:
+            print(f"Ошибка загрузки {model_path}: {e}")
+            return
+
+        X_scaled = scaler.transform(X_current)
+        prediction = model.predict(X_scaled)
+
+        if prediction[0] <= -0.5:
+            anomaly_score = model.score_samples(X_scaled)[0]
+
+            details = {
+                "time": now.isoformat(),
+                "total_conns_5m": total_conns,
+                "orig_bytes_5m": orig_bytes,
+                "resp_bytes_5m": resp_bytes,
+                "conns_per_sec_rate": round(conns_rate, 4),
+                "unique_dst_ips": unique_dst_ips,
+                "total_dns_5m": total_dns,
+                "nxdomain_dns_5m": nxdomain_dns
+            }
+
+            cursor.execute("""
+                INSERT INTO behavioral_alerts (user_id, timestamp, weekday, slot, anomaly_score, details)
+                VALUES (?, datetime('now'), ?, ?, ?, ?)
+            """, (user_id, weekday, slot, float(anomaly_score), json.dumps(details)))
+
+            conn.commit()
+
+
+def user_check():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        query = """
+            SELECT DISTINCT u.id, u.ip_addr
+            FROM conn c
+            JOIN vpn_users u ON c."id.orig_h" = u.ip_addr
+            WHERE c.ts >= datetime('now', '-5 minutes')
+        """
+        cursor.execute(query)
+        active_users = [row[0] for row in cursor.fetchall()]
+
+    for user_id, user_ip in active_users:
+        try:
+            checker(user_id, user_ip)
+        except Exception as e:
+            print(f"Ошибка при детекции пользователя {user_id}: {e}")
+
+
+user_check()
+```

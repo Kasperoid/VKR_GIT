@@ -1,0 +1,72 @@
+# Cкрипт парсинга status-server.log {#sec-status-server-script .appendix}
+
+``` python
+import sqlite3
+import sys
+import os
+from datetime import datetime
+
+DB_PATH = '/var/db/traffic.sqlite'
+STATUS_LOG = '/run/openvpn-server/status-server.log'
+
+def parse_status_file(filepath):
+    users = {}
+    try:
+        with open(filepath, 'r') as f:
+            for line in f:
+                if line.startswith('CLIENT_LIST,'):
+                    parts = line.strip().split(',')
+                    if len(parts) >= 4:
+                        common_name = parts[1]
+                        virtual_addr = parts[3]
+                        if virtual_addr and common_name and common_name != 'UNDEF':
+                            users[common_name] = virtual_addr
+    except Exception as e:
+        print(f"Ошибка чтения файла статуса: {e}", file=sys.stderr)
+        return None
+    return users
+
+
+def update_db(conn, current_users):
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT username, ip_addr FROM vpn_users')
+    db_records = {row[0]: row[1] for row in cursor.fetchall()}
+
+    updated = 0
+
+    for username, ip in current_users.items():
+        if username in db_records:
+            cursor.execute('''
+                UPDATE vpn_users
+                SET ip_addr = ?
+                WHERE username = ?
+            ''', (ip, username))
+            updated += 1
+
+    conn.commit()
+    return updated
+
+
+def main():
+    db_dir = os.path.dirname(DB_PATH)
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
+
+    users = parse_status_file(STATUS_LOG)
+
+    if users is None:
+        print(f"{datetime.now().isoformat()}: Ошибка чтения файла статуса, обновление отменено", file=sys.stderr)
+        sys.exit(1)
+
+    conn = sqlite3.connect(DB_PATH)
+
+    updated = update_db(conn, users)
+
+    print(f"{datetime.now().isoformat()}: Обновлено: {updated}")
+    conn.close()
+
+
+if __name__ == '__main__':
+    main()
+```

@@ -8,6 +8,14 @@ book:
     - index.qmd
     - chapters/chapter1/chapter1.qmd
     - chapters/chapter2/chapter2.qmd
+    - chapters/chapter3/chapter3.qmd
+  appendices:
+    - chapters/chapter3/appendices/appendix_ip_script.qmd
+    - chapters/chapter3/appendices/appendix_ml_constants.qmd
+    - chapters/chapter3/appendices/appendix_ml_collector.qmd
+    - chapters/chapter3/appendices/appendix_ml_helpers.qmd
+    - chapters/chapter3/appendices/appendix_ml_trainer.qmd
+    - chapters/chapter3/appendices/appendix_ml_checker.qmd
     
 lang: ru
 mainfont: "Times New Roman"

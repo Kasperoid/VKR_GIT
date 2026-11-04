@@ -1,0 +1,5 @@
+# Содержимое constants.py {#sec-ml-constants .appendix}
+
+``` python
+DB_PATH = '../traffic.sqlite'
+```

@@ -1,0 +1,73 @@
+# Содержимое collector.py {#sec-ml-collector .appendix}
+
+``` python
+import sqlite3
+import time
+from datetime import datetime
+from constants import DB_PATH
+
+
+def collector():
+    ts_current = time.time()
+    ts_back_6h = ts_current - 6 * 3600
+    weekday = datetime.now().weekday()
+    slot = datetime.now().hour // 6
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute('''SELECT vpn_users.id, vpn_users.ip_addr, vpn_users.username FROM vpn_users
+                    LEFT JOIN model_metadata ON vpn_users.id = model_metadata.user_id
+                    WHERE vpn_users.ip_addr IS NOT NULL
+                    AND model_metadata.model_path IS NULL''')
+
+    users = cursor.fetchall()
+
+    if (len(users) != 0):
+        for user in users:
+            cursor.execute('''SELECT
+                            COUNT(*) AS total_conns,
+                            SUM(orig_bytes),
+                            SUM(resp_bytes),
+                            duration,
+                            COUNT(DISTINCT "id.resp_h") AS unique_dst_ips,
+                            COUNT(DISTINCT "id.resp_p") AS unique_dst_ports,
+                            AVG(duration) AS avg_duration,
+                            (COUNT(*) / 6 * 60 * 60) AS conns_per_sec
+                            FROM conn
+                            WHERE conn."id.orig_h" = ? AND conn.ts <= ? AND conn.ts >= ?''',
+                           (user[1], ts_current, ts_back_6h))
+
+            userWindowData = cursor.fetchall()
+
+            if (len(userWindowData[0]) != 0 and userWindowData[0][0] != 0):
+                userWindowData = userWindowData[0]
+
+                cursor.execute('''SELECT
+                                COUNT(*) AS total_dns,
+                                COUNT(DISTINCT query) AS unique_dns,
+                                COALESCE(SUM(CASE WHEN rcode_name = 'NXDOMAIN' THEN 1 ELSE 0 END), 0) AS nxdomain_dns
+                                FROM dns
+                                WHERE "id.orig_h" = ? AND ts <= ? AND ts >= ?''',
+                               (user[1], ts_current, ts_back_6h))
+
+                dns_data = cursor.fetchone()
+                total_dns = dns_data[0] if dns_data else 0
+                unique_dns = dns_data[1] if dns_data else 0
+                nxdomain_dns = dns_data[2] if dns_data else 0
+
+                cursor.execute('''
+                INSERT INTO user_window_stats 
+                (user_id, window_start, weekday, slot, total_conns, unique_dst_ips, unique_dst_ports, resp_bytes, orig_bytes, avg_duration, conns_per_sec, total_dns, unique_dns, nxdomain_dns)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''',
+                               (user[0], ts_back_6h, weekday, slot, userWindowData[0], userWindowData[4],
+                                userWindowData[5], userWindowData[2], userWindowData[1], userWindowData[6],
+                                userWindowData[7], total_dns, unique_dns, nxdomain_dns))
+                conn.commit()
+
+    cursor.close()
+
+
+collector()
+```
