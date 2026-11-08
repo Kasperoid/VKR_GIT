@@ -1,0 +1,111 @@
+# Содержимое файла userNotificationControl.ts {#sec-api-userNotificationControl .appendix}
+
+``` python
+import {Response, Request} from 'express'
+import { createDb, getQuery, runQuery } from '../../db/queryDb';
+import { NotificationType, UserRoleType } from '../../types/user';
+
+type UserSendNotificationReqType = {
+    clientId: number,
+    type: NotificationType,
+    payload: string
+}
+
+type UserGetNotificationsReqType = {
+    clientId: number
+}
+
+export const userSendNotification = async (req: Request, res: Response) => {
+    const {clientId, type, payload}: UserSendNotificationReqType = req.body
+    
+    const db = createDb(res)
+
+    try {
+        const clientExist = await getQuery<{
+            id: number,
+            username: string,
+            hash_password: string,
+            role: UserRoleType,
+            ip_addr: string,
+            short_code: string
+        }>(
+            db,
+            `SELECT * FROM vpn_users WHERE id=?`,
+            [clientId]
+        )
+
+        if (clientExist.length > 0) {
+            const result = await runQuery(
+                db,
+                `INSERT OR IGNORE INTO notifications (client_id, type, payload) VALUES (?, ?, ?);`,
+                [clientId, type, payload]
+            )
+
+            db.close()
+
+            if (result.changes === 0) {
+                res.json({
+                    success: false,
+                    text: 'Уведомление уже отправлено'
+                })
+            } else {
+                res.json({
+                    success: true,
+                    info: []
+                })
+            }
+        } else {
+
+            db.close()
+            
+            res.json({
+                success: false,
+                text: 'Администратора не существует'
+            })
+        }
+
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+
+export const userGetNotifications = async (req: Request, res: Response) => {
+    const {clientId}: UserGetNotificationsReqType = req.body
+
+    const db = createDb(res)
+
+    try {
+        const data = await getQuery<{
+            clientId: number,
+            id: number,
+            type: NotificationType,
+            payload: string,
+            isRead: boolean
+        }>(
+            db,
+            `SELECT client_id as clientId, id, type, payload, is_read as isRead FROM notifications WHERE client_id = ? AND is_read = 0`,
+            [clientId]
+        )
+
+        db.close()
+
+        res.json({
+            success: true,
+            info: data
+        })
+
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+```

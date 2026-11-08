@@ -1,0 +1,158 @@
+# Содержимое файла blockListControl.ts {#sec-api-blockListControl .appendix}
+
+``` python
+import { Response, Request } from 'express';
+import { createDb, getQuery, runQuery } from '../../db/queryDb';
+
+type BlockListCountriesType = {
+    clientId: number,
+    countryCodes: string,
+    getAll: boolean
+}
+
+type BlockListDomainsType = {
+    clientId: number,
+    domains: {
+        label: string,
+        type: "edit" | "insert" | "delete",
+        oldLabel: string
+    },
+    getAll: boolean
+}
+
+export const getBlockListCountries = async (req: Request, res: Response) => {
+    const { clientId, countryCodes, getAll }: BlockListCountriesType = req.body;
+    const db = createDb(res);
+
+    try {
+        await runQuery(
+            db,
+            `CREATE TABLE IF NOT EXISTS block_countries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            clientId TEXT NOT NULL,
+            countries_codes TEXT NOT NULL,
+            UNIQUE(clientId, countries_codes)
+            )`,
+            []
+        );
+
+        if (!!getAll) { 
+            // Получение всего списка стран из ЧС
+            const countries = await getQuery<{
+                countries_codes: string
+            }>(
+                db,
+                'SELECT countries_codes FROM block_countries WHERE clientId = ?',
+                [clientId]
+            );
+
+            if (countries.length > 0) {
+                res.json({ success: true, info: countries.map(c => c.countries_codes) });
+            } else {
+                res.json({ success: true, info: [] });
+            }
+        } else { 
+            // Добавление/удаление списка стран
+            await runQuery(db, 'DELETE FROM block_countries WHERE clientId = ?', [clientId]);
+
+            if (countryCodes && countryCodes.trim().length > 0) {
+                const codes = countryCodes.split(',');
+                for (const code of codes) {
+                    await runQuery(
+                        db,
+                        `INSERT INTO block_countries (clientId, countries_codes) VALUES (?, ?)`,
+                        [clientId, code.trim()]
+                    );
+                }
+            }
+            res.json({ success: true });
+        }
+
+        db.close();
+    } catch (e) {
+        db.close();
+        res.json({
+            success: false,
+            info: 'Произошла непредвиденная ошибка'
+        });
+    }
+}
+
+export const getBlockListDomains = async (req: Request, res: Response) => {
+    const { clientId, domains, getAll }: BlockListDomainsType = req.body;
+    const db = createDb(res);
+
+    try {
+        await runQuery(
+            db,
+            `CREATE TABLE IF NOT EXISTS block_domains (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            clientId TEXT NOT NULL,
+            domains TEXT NOT NULL,
+            UNIQUE(clientId, domains)
+            )`,
+            []
+        );
+
+        if (!!getAll) { 
+            // Получение всех доменов
+            const getDomainsResp = await getQuery<{
+                domains: string
+            }>(
+                db,
+                'SELECT domains FROM block_domains WHERE clientId = ?',
+                [clientId]
+            );
+
+            if (getDomainsResp.length > 0) {
+                const getDomains = getDomainsResp.map((d, index) => {
+                    return {
+                        label: d.domains,
+                        id: index
+                    };
+                });
+                res.json({ success: true, info: getDomains });
+            } else {
+                res.json({ success: true, info: [] });
+            }
+        } else { 
+            // Внесение изменений в домены 
+            switch (domains.type) {
+                case 'insert':
+                    await runQuery(
+                        db,
+                        `INSERT OR IGNORE INTO block_domains (clientId, domains) VALUES (?, ?)`,
+                        [clientId, domains.label]
+                    );
+                    break;
+                case 'delete':
+                    await runQuery(
+                        db,
+                        `DELETE FROM block_domains WHERE clientId = ? AND domains = ?`,
+                        [clientId, domains.label]
+                    );
+                    break;
+                case 'edit':
+                    await runQuery(
+                        db,
+                        `UPDATE block_domains SET domains = ? WHERE clientId = ? AND domains = ?`,
+                        [domains.label, clientId, domains.oldLabel]
+                    );
+                    break;
+                default:
+                    db.close();
+                    return res.json({ success: false });
+            }
+
+            db.close();
+            res.json({ success: true });
+        }
+    } catch (e) {
+        db.close();
+        res.json({
+            success: false,
+            info: 'Произошла непредвиденная ошибка'
+        });
+    }
+}
+```

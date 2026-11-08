@@ -1,0 +1,60 @@
+# Содержимое файла index.ts {#sec-api-index .appendix}
+
+``` python
+import express from 'express'
+import {checkAuth} from './middleware/index.ts'
+import bodyParser from 'body-parser';
+import getConnectionInfo from './controllers/connections/graph.ts';
+import { getSslTop } from './controllers/connections/ssl.ts';
+import { getCountriesTop } from './controllers/connections/countries.ts';
+import { getAlerts } from './controllers/connections/alert.ts';
+import { downloadUserVpnConfig, getUserInfo } from './controllers/user/userControl.ts';
+import { getBlockListCountries, getBlockListDomains } from './controllers/user/blockListControl.ts';
+import { userFastEntry, userLogin, userRegistration, userSetShortCode } from './controllers/user/userEntryControl.ts';
+import { userConfirmDepend, userDeleteDepends, userDenyDepend, userGetDepends } from './controllers/user/userDependControl.ts';
+import { userGetNotifications, userSendNotification } from './controllers/user/userNotificationControl.ts';
+
+export const app = express();
+const PORT = 3000;
+
+app.use(checkAuth)
+app.use(bodyParser.json())
+
+app.post('/traffic/connections/graph', getConnectionInfo);
+
+app.post('/traffic/connections/ssl/top', getSslTop)
+
+app.post('/traffic/connections/countries/top', getCountriesTop)
+
+app.post('/traffic/connections/alert', getAlerts)
+
+app.post('/traffic/users/info', getUserInfo)
+
+app.post('/traffic/users/blockList/countries', getBlockListCountries)
+
+app.post('/traffic/users/blockList/domains', getBlockListDomains)
+
+app.post('/traffic/users/reg', userRegistration)
+
+app.post('/traffic/users/login', userLogin)
+
+app.post('/traffic/users/shortcode', userSetShortCode)
+
+app.post('/traffic/users/download/config', downloadUserVpnConfig)
+
+app.post('/traffic/users/deleteDepends', userDeleteDepends)
+
+app.post('/traffic/users/getDepends', userGetDepends)
+
+app.post('/traffic/users/confirmDepend', userConfirmDepend)
+
+app.post('/traffic/users/denyDepend', userDenyDepend)
+
+app.post('/traffic/users/sendNotiffication', userSendNotification)
+
+app.post('/traffic/users/getNotiffications', userGetNotifications)
+
+app.post('/traffic/users/fastEntry', userFastEntry)
+
+app.listen(PORT, '0.0.0.0');
+```

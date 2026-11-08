@@ -1,0 +1,51 @@
+# Содержимое файла vpnConf.ts {#sec-api-vpnConf .appendix}
+
+``` python
+import { exec } from 'child_process';
+import fs from 'fs/promises'
+import path from 'path'
+import { promisify } from 'util';
+
+const execPromise = promisify(exec);
+
+const EASY_RSA_DIR = 'easy-rsa';
+const CLIENT_COMMON_FILE = 'client-common.txt';
+const PKI_INLINE_PRIVATE_DIR = path.join(EASY_RSA_DIR, 'pki', 'inline', 'private');
+const CONFIGS_DIR = 'vpn';
+
+export async function generateClientCertificate(clientName: string) {
+  const command = `cd ${EASY_RSA_DIR} && ./easyrsa --batch --days=3650 build-client-full "${clientName}" nopass`;
+  try {
+    const { stdout } = await execPromise(command);
+    return stdout;
+
+  } catch (error) {
+    
+    throw error;
+  }
+}
+
+export async function buildOvpFile(clientName: string) {
+  const commonContent = await fs.readFile(CLIENT_COMMON_FILE, 'utf8');
+  const filteredCommon = commonContent.split('\n')
+    .filter(line => !line.trim().startsWith('#'))
+    .join('\n');
+
+  const inlinePath = path.join(PKI_INLINE_PRIVATE_DIR, `${clientName}.inline`);
+  let inlineContent = '';
+  try {
+    inlineContent = await fs.readFile(inlinePath, 'utf8');
+  } catch (err) {
+    throw new Error(`Cannot read inline file for ${clientName}: ${(err as Error).message}`);
+  }
+  const filteredInline = inlineContent.split('\n')
+    .filter(line => !line.trim().startsWith('#'))
+    .join('\n');
+  
+  const resultFile = `${filteredCommon}\n${filteredInline}`
+  const filePath = path.join(CONFIGS_DIR, `${clientName}.ovpn`);
+  await fs.writeFile(filePath, resultFile, 'utf8');
+
+  return resultFile;
+}
+```

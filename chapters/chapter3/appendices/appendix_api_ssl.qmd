@@ -1,0 +1,119 @@
+# Содержимое файла ssl.ts {#sec-api-ssl .appendix}
+
+``` python
+import {Response, Request} from 'express'
+import { createDb, getQuery } from '../../db/queryDb'
+import { UserRoleType } from '../../types/user';
+
+type GetSslTopParamsType = {
+    timeStart: number,
+    timeEnd: number,
+    limit: number,
+    clientId: number
+}
+
+export const getSslTop = async (req: Request, res: Response) => {
+    let adminId: null | number = null;
+    const {
+        timeStart,
+        timeEnd,
+        limit,
+        clientId
+    }: GetSslTopParamsType = req.body
+
+    const db = createDb(res)
+
+    try {
+        const clientInfoResp = await getQuery<{
+            clientIp: string,
+            role: UserRoleType
+        }>(
+            db,
+            'SELECT ip_addr as clientIp, role FROM vpn_users WHERE id = ?',
+            [clientId]
+        )
+
+        const clientIp: undefined | string = clientInfoResp[0]?.clientIp
+        const clientRole: UserRoleType = clientInfoResp[0].role
+
+        if (!!clientIp) {
+            const allSites = await getQuery<{
+                server: string,
+                value: number,
+            }>(
+                db,
+                `SELECT server_name AS server, COUNT(*) AS value
+                FROM ssl
+                WHERE server IS NOT NULL AND
+                "id.orig_h" = ? AND
+                ts >= ? AND ts <= ?
+                GROUP BY server;`,
+                [clientIp, timeStart, timeEnd]
+            )
+
+            if (clientRole === 'node') {
+                const clientDependResp = await getQuery<{
+                    id: number
+                }>(
+                    db,
+                    'SELECT admin_id as id FROM node_depends WHERE node_id = ?',
+                    [clientId]
+                )
+
+                adminId = clientDependResp[0].id
+            }
+
+            const blacklistStrResp = await getQuery<{
+                domains: string
+            }>(
+                db,
+                'SELECT domains FROM block_domains WHERE clientId = ?',
+                [!!adminId ? adminId : clientId]
+            )
+
+            let blacklistStr: string = blacklistStrResp[0]?.domains
+
+            const blockedDomains = blacklistStr
+                    ? blacklistStr.split(',').map(d => d.trim().toLowerCase()).filter(Boolean)
+                    : [];
+            
+            const enriched = allSites.map(site => {
+                    const serverLower = site.server.toLowerCase();
+                    const inBlacklist = blockedDomains.some(domain => serverLower.includes(domain));
+                    return { ...site, blackList: inBlacklist };
+                });
+
+            enriched.sort((a, b) => b.value - a.value);
+
+            const top5 = enriched.slice(0, 5);
+
+            const blockedNotInTop5 = enriched.filter(
+                site => site.blackList && !top5.some(t => t.server === site.server)
+            );
+
+            const result = [...top5, ...blockedNotInTop5];
+
+            db.close()
+
+            res.json({
+                success: true,
+                info: result
+            })
+        } else {
+            db.close()
+
+            res.json({
+                success: true,
+                info: []
+            })
+        }
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            info: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+```

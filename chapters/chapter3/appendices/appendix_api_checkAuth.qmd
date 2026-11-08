@@ -1,0 +1,21 @@
+# Функция checkAuth {#sec-api-checkAuth .appendix}
+
+``` python
+import { mainAuth } from "./auth"
+import { Request, Response, NextFunction } from 'express';
+
+
+export const checkAuth = (req: Request, res: Response, next: NextFunction) => { 
+    let authToken = req.headers.authorization
+    if (!!authToken) {
+        authToken = authToken.split(' ')[1]
+        if (mainAuth(authToken)) {
+            next()
+        } else {
+            res.status(401).json({error: 'Ошибка авторизации'})
+        }
+    } else {
+        res.status(401).json({error: 'Ошибка авторизации'})
+    }
+}
+```

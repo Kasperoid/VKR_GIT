@@ -1,0 +1,281 @@
+# Содержимое файла graph.ts {#sec-api-graph .appendix}
+
+``` python
+import { createDb, getQuery } from "../../db/queryDb";
+import {Response, Request} from 'express'
+import { FilterViewType, RequestConnectionInfoParamsType } from "../../types/connections";
+
+function formatLabelView(ts: number, view: FilterViewType) {
+    const d = new Date(ts * 1000);
+    switch (view) {
+        case 'hour':
+        case '6hour':
+        case '12hour': {
+            const h = d.getUTCHours().toString().padStart(2, '0');
+            const m = d.getUTCMinutes().toString().padStart(2, '0');
+            return `${h}:${m}`;
+        }
+        case 'day': {
+            return `${d.getUTCHours().toString().padStart(2, '0')}:00`;
+        }
+        case 'week': {
+            const days = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+            return days[(d.getUTCDay() + 6) % 7];
+        }
+        case 'month': {
+            return d.getUTCDate().toString().padStart(2, '0');
+        }
+        default: return '';
+    }
+}
+
+function formatLabelCustom(ts: number, bucketSize: number) {
+    const d = new Date(ts * 1000);
+    if (bucketSize < 3600) {
+        const h = d.getUTCHours().toString().padStart(2, '0');
+        const m = d.getUTCMinutes().toString().padStart(2, '0');
+        return `${h}:${m}`;
+    } else if (bucketSize === 3600) {
+        return `${d.getUTCHours().toString().padStart(2, '0')}:00`;
+    } else {
+        return d.toISOString().slice(0, 10); // YYYY-MM-DD
+    }
+}
+
+function generateTitle(view: FilterViewType, startUnix: number, endUnix: number) {
+    const start = new Date(startUnix * 1000);
+    const end = new Date(endUnix * 1000);
+
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const fmtTime = (d: Date) => `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+    const fmtDate = (d: Date) => `${pad(d.getUTCDate())}.${pad(d.getUTCMonth() + 1)}.${d.getUTCFullYear()}`;
+
+    const monthNames = [
+        'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    ];
+
+    switch (view) {
+        case 'hour':
+            return `С ${fmtTime(start)} до ${fmtTime(end)} ${fmtDate(start)}`;
+        case '6hour':
+            return `С ${fmtTime(start)} до ${fmtTime(end)} ${fmtDate(start)}`;
+        case '12hour':
+            return `С ${fmtTime(start)} до ${fmtTime(end)} ${fmtDate(start)}`;
+        case 'day':
+            return fmtDate(start);
+        case 'week': {
+            const endOfWeek = new Date(endUnix * 1000 - 1000);
+            return `Неделя ${fmtDate(start)} – ${fmtDate(endOfWeek)}`;
+        }
+        case 'month': {
+            const year = start.getUTCFullYear();
+            const month = monthNames[start.getUTCMonth()];
+            return `${month} ${year}`;
+        }
+        case 'custom': {
+            const diffSec = endUnix - startUnix;
+            if (diffSec <= 86400 && start.getUTCDate() === end.getUTCDate()) {
+                return `С ${fmtTime(start)} до ${fmtTime(end)} ${fmtDate(start)}`;
+            } else {
+                return `С ${fmtDate(start)} ${fmtTime(start)} до ${fmtDate(end)} ${fmtTime(end)}`;
+            }
+        }
+        default:
+            return '';
+    }
+}
+
+const aggregate = (
+    rows: any[], 
+    bucketList: {
+        ts: number;
+        label: string;
+        value: number;
+    }[], 
+    bucketSize: number
+) => {
+    const result = bucketList.map(b => ({ ...b }));
+    const map = new Map(result.map(b => [b.ts, b]));
+    for (const row of rows) {
+        const key = Math.floor(row.ts / bucketSize) * bucketSize;
+        const entry = map.get(key);
+        if (entry) {
+            entry.value += row.bytes;
+        }
+    }
+    return result;
+};
+
+const getConnectionInfo = async (req: Request, res: Response) => {
+    const {
+        clientId,
+        selectedView,
+        timeStart,
+        timeEnd,
+        offset,
+        dateNow
+    }: RequestConnectionInfoParamsType = req.body;
+    
+    const db = createDb(res)
+
+    try {
+        const ipResponse = await getQuery<{ipAddr: string}>(
+            db,
+            'SELECT ip_addr as ipAddr FROM vpn_users WHERE id = ?',
+            [clientId]
+        )
+
+        const clientIp: undefined | string = ipResponse[0]?.ipAddr
+        const nowSec = new Date(dateNow)
+        const off = Number(offset) || 0;
+
+        let intervalStart, intervalEnd, bucketSize, buckets;
+
+        if (selectedView === 'custom') {
+            intervalStart = timeStart;
+            intervalEnd = timeEnd;
+            const duration = intervalEnd - intervalStart;
+            if (duration <= 3600) bucketSize = 600;
+            else if (duration <= 21600) bucketSize = 900;
+            else if (duration <= 43200) bucketSize = 1800;
+            else if (duration <= 86400) bucketSize = 3600;
+            else if (duration <= 7 * 86400) bucketSize = 86400;
+            else bucketSize = 86400;
+
+            const start = Math.floor(intervalStart / bucketSize) * bucketSize;
+            buckets = [];
+            for (let t = start; t < intervalEnd; t += bucketSize) {
+                buckets.push({ ts: t, label: formatLabelCustom(t, bucketSize), value: 0 });
+            }
+        } else {
+            const t = nowSec;
+            switch (selectedView) {
+                case 'hour':
+                    intervalStart = Math.floor(t.getTime() / 3600) * 3600 - off * 3600;
+                    intervalEnd = intervalStart + 3600;
+                    bucketSize = 600;
+                    break;
+                case '6hour':
+                    intervalStart = Math.floor(t.getTime() / 21600) * 21600 - off * 21600;
+                    intervalEnd = intervalStart + 21600;
+                    bucketSize = 900;
+                    break;
+                case '12hour':
+                    intervalStart = Math.floor(t.getTime() / 43200) * 43200 - off * 43200;
+                    intervalEnd = intervalStart + 43200;
+                    bucketSize = 1800;
+                    break;
+                case 'day':
+                    intervalStart = Math.floor(t.getTime() / 86400) * 86400 - off * 86400;
+                    intervalEnd = intervalStart + 86400;
+                    bucketSize = 3600;
+                    break;
+                case 'week': {
+                    const d = new Date(t.getTime() * 1000);
+                    const dayOfWeek = d.getUTCDay();
+                    const diffToMonday = (dayOfWeek + 6) % 7;
+                    const monday = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - diffToMonday));
+                    const weekStart = monday.getTime() / 1000;
+                    intervalStart = weekStart - off * 7 * 86400;
+                    intervalEnd = intervalStart + 7 * 86400;
+                    bucketSize = 86400;
+                    break;
+                }
+                case 'month': {
+                    const d = new Date(t.getTime() * 1000);
+                    const year = d.getUTCFullYear();
+                    const month = d.getUTCMonth();
+                    const totalMonths = year * 12 + month - off;
+                    const targetYear = Math.floor(totalMonths / 12);
+                    const targetMonth = totalMonths % 12;
+                    const startDate = new Date(Date.UTC(targetYear, targetMonth, 1));
+                    intervalStart = startDate.getTime() / 1000;
+                    const endDate = new Date(Date.UTC(targetYear, targetMonth + 1, 1));
+                    intervalEnd = endDate.getTime() / 1000;
+                    bucketSize = 86400;
+                    break;
+                }
+                default:
+                    return res.status(400).json({ error: `Неподдерживаемый selectedView: ${selectedView}` });
+            }
+
+            buckets = [];
+            for (let t = intervalStart; t < intervalEnd; t += bucketSize) {
+                buckets.push({ ts: t, label: formatLabelView(t, selectedView), value: 0 });
+            }
+        }
+
+        const title = generateTitle(selectedView, intervalStart, intervalEnd);
+
+        const [origRows, respRows] = await Promise.all([
+            getQuery(
+                db,
+                `SELECT ts, orig_bytes AS bytes FROM conn WHERE "id.orig_h" = ? AND ts BETWEEN ? AND ?
+                UNION ALL
+                SELECT ts, resp_bytes AS bytes FROM conn WHERE "id.resp_h" = ? AND ts BETWEEN ? AND ?`,
+                [clientIp, intervalStart, intervalEnd, clientIp, intervalStart, intervalEnd]
+            ),
+            getQuery(
+                db,
+                `SELECT ts, resp_bytes AS bytes FROM conn WHERE "id.orig_h" = ? AND ts BETWEEN ? AND ?
+                UNION ALL
+                SELECT ts, orig_bytes AS bytes FROM conn WHERE "id.resp_h" = ? AND ts BETWEEN ? AND ?`,
+                [clientIp, intervalStart, intervalEnd, clientIp, intervalStart, intervalEnd]
+            ),
+            getQuery(
+                db,
+                `SELECT MAX(bytes) AS max_bytes
+                FROM (
+                    SELECT resp_bytes AS bytes
+                    FROM conn
+                    WHERE "id.orig_h" = ? AND ts BETWEEN ? AND ?
+                    
+                    UNION ALL
+                    
+                    SELECT orig_bytes AS bytes
+                    FROM conn
+                    WHERE "id.resp_h" = ? AND ts BETWEEN ? AND ?
+                ) AS traffic_data;`,
+                [clientIp, intervalStart, intervalEnd, clientIp, intervalStart, intervalEnd]
+            )
+        ]);
+
+        const respPoints = aggregate(respRows, buckets, bucketSize)
+        const origPoints = aggregate(origRows, buckets, bucketSize)
+
+        const sumRespBytes = respPoints.reduce((acc, cur) => {
+            return cur.value + acc
+        }, 0)
+        const sumOrigBytes = origPoints.reduce((acc, cur) => {
+            return cur.value + acc
+        }, 0)
+
+        return res.json({
+            success: true,
+            title: title,
+
+            info: {
+                resp: {
+                    points: respPoints,
+                    max: Math.max(...respPoints.map(item => item.value)),
+                    min: Math.min(...respPoints.map(item => item.value)),
+                    sum: sumRespBytes
+                },
+                orig: {
+                    points: origPoints,
+                    max: Math.max(...origPoints.map(item => item.value)),
+                    min: Math.min(...origPoints.map(item => item.value)),
+                    sum: sumOrigBytes
+                }
+            }
+        });
+    } catch (e) {
+        return res.json({ success: false, info: e });
+    } finally {
+        db.close();
+    }
+}
+
+export default getConnectionInfo
+```

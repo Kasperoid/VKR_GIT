@@ -1,0 +1,13 @@
+# Функция mainAuth {#sec-api-mainAuth .appendix}
+
+``` python
+import crypto from 'crypto'
+
+export const mainAuth = (token: string) => {
+    if (token === crypto.createHash('sha256').update('bvcxertyuiolkmnbvedhklcvb').digest('hex')) {
+        return true
+    } else {
+        return false
+    }
+}
+```

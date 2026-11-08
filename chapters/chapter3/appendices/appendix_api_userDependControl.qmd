@@ -1,0 +1,196 @@
+# Содежимое файла userDependControl.ts {#sec-api-userDependControl .appendix}
+
+``` python
+import {Response, Request} from 'express'
+import { createDb, getQuery, runQuery } from '../../db/queryDb'
+import { NotificationType, UserRoleType } from '../../types/user'
+
+type UserDeleteDependsReqType = {
+    nodeId: number,
+    adminId: number
+}
+
+type UserGetDependsReqType = {
+    clientId: number,
+    role: UserRoleType
+}
+
+type UserConfirmDependReqType = {
+    nodeId: number,
+    adminId: number,
+    notificationId: number
+}
+
+type UserDenyDependReqType = {
+    notificationId: number
+}
+
+export const userDeleteDepends = async (req: Request, res: Response) => {
+    const {nodeId, adminId}: UserDeleteDependsReqType = req.body;
+    
+    const db = createDb(res)
+
+    try {
+        await runQuery(
+            db,
+            'DELETE FROM node_depends WHERE node_id = ? AND admin_id = ?',
+            [nodeId, adminId]
+        )
+
+        db.close()
+
+        res.json({
+            success: true,
+            info: []
+        })
+    } catch (e) {
+        db.close()
+        
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+
+export const userGetDepends = async (req: Request, res: Response) => {
+    const {clientId, role}: UserGetDependsReqType = req.body;
+
+    const db = createDb(res)
+
+    try {
+        const dependIds = await getQuery<{
+            id: number,
+            username: string
+        }>(
+            db,
+            `
+            SELECT t1.id, t1.username
+            FROM vpn_users AS t1
+            INNER JOIN node_depends AS t2
+            ON t1.id = t2.${role === 'node' ? 'admin_id' : 'node_id'}
+            WHERE ${role === 'node' ? 'node_id' : 'admin_id'} = ?;
+            `,
+            [clientId]
+        )
+
+        db.close()
+
+        res.json({
+            success: true,
+            info: dependIds
+        })
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+
+export const userConfirmDepend = async (req: Request, res: Response) => {
+    const {nodeId, adminId, notificationId}: UserConfirmDependReqType = req.body;
+
+    const db = createDb(res)
+
+    try {
+        const notification = await getQuery<{
+            id: number,
+            client_id: number,
+            type: NotificationType,
+            payload: string,
+            is_read: boolean
+        }>(
+            db,
+            'SELECT * FROM notifications WHERE id = ?',
+            [notificationId]
+        )
+
+        if (notification.length > 0) {
+            await runQuery(
+                db,
+                'DELETE FROM notifications WHERE id = ?',
+                [notificationId]
+            )
+
+            const depend = await getQuery<{
+                id: number,
+                node_id: number,
+                admin_id: number
+            }>(
+                db,
+                'SELECT * FROM node_depends WHERE node_id = ? AND admin_id = ?',
+                [nodeId, adminId]
+            )
+
+            if (depend.length === 0) {
+                await runQuery(
+                    db,
+                    'INSERT INTO node_depends (node_id, admin_id) VALUES (?, ?)',
+                    [nodeId, adminId]
+                )
+            }
+        }
+
+        db.close()
+
+        res.json({
+            success: true,
+            info: []
+        })
+
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+
+export const userDenyDepend = async (req: Request, res: Response) => {
+    const {notificationId}: UserDenyDependReqType = req.body;
+
+    const db = createDb(res)
+
+    try {
+        const notificationArr = await getQuery<{
+            id: number,
+            client_id: number,
+            type: NotificationType,
+            payload: string,
+            is_read: boolean
+        }>(
+            db,
+            'SELECT * FROM notifications WHERE id = ?',
+            [notificationId]
+        )
+
+        if (notificationArr.length > 0) {
+            await runQuery(
+                db,
+                'DELETE FROM notifications WHERE id = ?',
+                [notificationId]
+            )
+        }
+
+        db.close()
+
+        res.json({
+            success: true,
+            info: []
+        })
+
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+```

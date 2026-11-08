@@ -1,0 +1,194 @@
+# Содержимое файла userEntryControl.ts {#sec-api-userEntryControl .appendix}
+
+``` python
+import {Response, Request} from 'express'
+import { createDb, getQuery, runQuery } from '../../db/queryDb';
+import { buildOvpFile, generateClientCertificate } from '../../vpnConf';
+import { UserRoleType } from '../../types/user';
+
+type UserRegReqType = {
+    username: string,
+    hash_password: string,
+    role: UserRoleType
+}
+
+type UserLoginReqType = {
+    username: string,
+    hash_password: string
+}
+
+type UserShortCodeReqType = {
+    username: string,
+    code: string
+}
+
+type UserFastEntryReqType = {
+    username: string,
+    passCode: string
+}
+
+
+export const userRegistration = async (req: Request, res: Response) => {
+    const {username, hash_password, role}: UserRegReqType  = req.body;
+
+    const db = createDb(res)
+
+    try {
+
+        await runQuery(
+            db,
+            `CREATE TABLE IF NOT EXISTS vpn_users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            hash_password TEXT NOT NULL,
+            role TEXT NOT NULL,
+            ip_addr TEXT
+            );`,
+            []
+        )
+
+        const result = await runQuery(
+            db,
+            `INSERT INTO vpn_users (username, hash_password, role)
+            SELECT ?, ?, ?
+            WHERE NOT EXISTS (SELECT 1 FROM vpn_users WHERE username = ?);`,
+            [username, hash_password, role, username]
+        )
+
+        if (result.changes === 0 ) {
+            db.close();
+            res.json({success: false, text: "Пользователь с таким именем существует"});
+
+        } else {
+            await generateClientCertificate(username);
+            const ovpnContent = await buildOvpFile(username);
+
+            res.setHeader('Content-Type', 'application/x-openvpn-profile');
+            res.setHeader('Content-Disposition', `attachment; filename="${username}.ovpn"`);
+
+            db.close()
+
+            res.send({success: true, text: ovpnContent});
+        }
+
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: "Прозошла непредвиденная ошибка"
+        })
+    }
+}
+
+export const userLogin = async (req: Request, res: Response) => {
+    const {username, hash_password}: UserLoginReqType = req.body
+
+    const db = createDb(res)
+
+    try {
+        const userHashInfoResp = await getQuery<{
+            hash_password: string
+        }>(
+            db,
+            `SELECT hash_password FROM vpn_users
+            WHERE username = ?`,
+            [username]
+        )
+
+        db.close()
+
+        const userHash = userHashInfoResp[0]
+
+        if (userHash.hash_password !== hash_password) {
+            res.json({success: false, text: 'Неверный логин или пароль'})
+        } else {
+            res.json({success: true})
+        }
+
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: "Прозошла непредвиденная ошибка"
+        })
+    }
+}
+
+export const userSetShortCode = async (req: Request, res: Response) => {
+    const {username, code}: UserShortCodeReqType = req.body;
+
+    const db = createDb(res)
+
+    try {
+        const idUserResp = await getQuery<{
+            id: number
+        }>(
+            db,
+            `SELECT id FROM vpn_users WHERE username = ?;`,
+            [username]
+        )
+
+        const idUser = idUserResp[0].id
+
+        if (!!idUser) {
+            await runQuery(
+                db,
+                `UPDATE vpn_users SET short_code = ? WHERE username = ?;`,
+                [code, idUser]
+            )
+
+            db.close()
+
+            res.json({success: true, info: []})
+        }
+
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: "Прозошла непредвиденная ошибка"
+        })
+    }
+}
+
+export const userFastEntry = async (req: Request, res: Response) => {
+    const {username, passCode}: UserFastEntryReqType = req.body
+    
+    const db = createDb(res)
+
+    try {
+        const dataResp = await getQuery<{
+            short_code: string
+        }>(
+            db,
+            `SELECT short_code FROM vpn_users WHERE username = ?`,
+            [username]
+        )
+
+        const code = dataResp[0].short_code
+
+        if (Number(code) !== Number(passCode)) {
+            res.json({
+                success: false,
+                text: 'Неверный код'
+            })
+        } else {
+            res.json({
+                success: true,
+                info: []
+            })
+        }
+
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+```

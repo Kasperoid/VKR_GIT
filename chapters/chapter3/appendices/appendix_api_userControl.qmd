@@ -1,0 +1,68 @@
+# Содержимое файла userControl.ts {#sec-api-userControl .appendix}
+
+``` python
+import {Response, Request} from 'express'
+import { createDb, getQuery } from '../../db/queryDb'
+import { UserRoleType } from '../../types/user'
+import * as fs from 'node:fs/promises'
+
+type GetUserInfoReqType = {
+    username: string
+}
+
+type UserDownloadConfReqType = {
+    username: string
+}
+
+export const getUserInfo = async (req: Request, res: Response) => {
+    const {username}: GetUserInfoReqType = req.body
+
+    const db = createDb(res)
+
+    try {
+        const userInfo = await getQuery<{
+            id: number,
+            ipAddress: string,
+            role: UserRoleType,
+            username: string
+        }>(
+            db,
+            `SELECT id, ip_addr AS ipAddress, role, username FROM vpn_users
+            WHERE username = ?`,
+            [username],
+        )
+
+        db.close();
+
+        res.json({
+            success: true,
+            info: userInfo[0]
+        });
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+
+export const downloadUserVpnConfig = async (req: Request, res: Response) => {
+    const {username}: UserDownloadConfReqType = req.body;
+
+    try {
+        const content = await fs.readFile(`/home/vpn/${username}.ovpn`, 'utf-8');
+
+        res.json({
+            success: true,
+            info: content
+        })
+    } catch (e) {
+        res.json({
+            success: false,
+            text: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+```

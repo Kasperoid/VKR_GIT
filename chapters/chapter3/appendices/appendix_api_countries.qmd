@@ -1,0 +1,112 @@
+# Содержимое файла countries.ts {#sec-api-countries .appendix}
+
+``` python
+import {Request, Response} from 'express'
+import { createDb, getQuery } from '../../db/queryDb';
+import { UserRoleType } from '../../types/user';
+
+type CountriesTopReqType = {
+    timeStart: number,
+    timeEnd: number,
+    limit: number,
+    clientId: number
+}
+
+export const getCountriesTop = async (req: Request, res: Response) => {
+    let adminId: null | number = null;
+    const {timeStart, timeEnd, limit, clientId}: CountriesTopReqType = req.body
+
+    const db = createDb(res)
+
+    try {
+        const clientIpResp = await getQuery<{
+            clientIp: string,
+            role: UserRoleType
+        }>(
+            db,
+            'SELECT ip_addr as clientIp, role FROM vpn_users WHERE id = ?',
+            [clientId]
+        )
+
+        const clientIp = clientIpResp[0]?.clientIp
+        const clientRole = clientIpResp[0].role
+
+        if (!!clientIp) {
+            const countries = await getQuery<{
+                country: string,
+                count: number,
+                lat: number,
+                lon: number
+            }>(
+                db,
+                `SELECT "geo.resp.country_code" AS country, COUNT(*) AS count, "geo.resp.latitude" AS lat, "geo.resp.longitude" AS lon
+                FROM conn
+                WHERE country IS NOT NULL AND
+                ts >= ? AND ts <= ? AND
+                "id.orig_h" = ?
+                GROUP BY country
+                ORDER BY count DESC;`,
+                [timeStart, timeEnd, clientIp]
+            )
+
+            if (clientRole === 'node') {
+                const clientDependResp = await getQuery<{
+                    id: number
+                }>(
+                    db,
+                    'SELECT admin_id as id FROM node_depends WHERE node_id = ?',
+                    [clientId]
+                )
+
+                adminId = clientDependResp[0].id
+            }
+
+            let blackListCountriesResp = await getQuery<{
+                countries: string
+            }>(
+                db,
+                'SELECT countries_codes AS countries FROM block_countries WHERE clientId = ?',
+                [!!adminId ? adminId : clientId]
+            )
+
+            let blackListCountries = blackListCountriesResp[0].countries
+
+            const blacklistSet = new Set(
+                blackListCountries
+                    ? blackListCountries.split(',').map(code => code.trim().toUpperCase()).filter(Boolean)
+                    : []
+            );
+
+            const enriched = countries.map(item => ({
+                ...item,
+                blackList: blacklistSet.has(item.country.toUpperCase())
+            }));
+
+            db.close()
+
+            res.json({
+                success: true,
+                info: {
+                    countries: enriched
+                }
+            })
+        } else {
+            db.close()
+
+            res.json({
+                success: true,
+                info: {
+                    countries: []
+                }
+            })
+        }
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            info: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+```

@@ -16,6 +16,20 @@ book:
     - chapters/chapter3/appendices/appendix_ml_helpers.qmd
     - chapters/chapter3/appendices/appendix_ml_trainer.qmd
     - chapters/chapter3/appendices/appendix_ml_checker.qmd
+    - chapters/chapter3/appendices/appendix_api_index.qmd
+    - chapters/chapter3/appendices/appendix_api_checkAuth.qmd
+    - chapters/chapter3/appendices/appendix_api_mainAuth.qmd
+    - chapters/chapter3/appendices/appendix_api_queryDb.qmd
+    - chapters/chapter3/appendices/appendix_api_vpnConf.qmd
+    - chapters/chapter3/appendices/appendix_api_userEntryControl.qmd
+    - chapters/chapter3/appendices/appendix_api_userDependControl.qmd
+    - chapters/chapter3/appendices/appendix_api_userNotificationControl.qmd
+    - chapters/chapter3/appendices/appendix_api_userControl.qmd
+    - chapters/chapter3/appendices/appendix_api_blockListControl.qmd
+    - chapters/chapter3/appendices/appendix_api_alert.qmd
+    - chapters/chapter3/appendices/appendix_api_countries.qmd
+    - chapters/chapter3/appendices/appendix_api_graph.qmd
+    - chapters/chapter3/appendices/appendix_api_ssl.qmd
     
 lang: ru
 mainfont: "Times New Roman"

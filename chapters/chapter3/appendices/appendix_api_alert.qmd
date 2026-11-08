@@ -1,0 +1,148 @@
+# Содержимое файла alert.ts {#sec-api-alert .appendix}
+
+``` python
+import {Response, Request} from 'express'
+import { createDb, getQuery } from '../../db/queryDb';
+
+type GetAlertsReqType = {
+    timeStart: number,
+    timeEnd: number,
+    clientId: number
+}
+
+const pad = (num: number, size: number = 2) => String(num).padStart(size, '0');
+
+function formatDateTime(ts: number) {
+    const date = new Date(ts * 1000);
+
+    const day = pad(date.getDate());
+    const month = pad(date.getMonth() + 1);
+    const year = date.getFullYear();
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+
+const selectWeekText = (num: number): string => {
+    switch (num) {
+        case 0:
+            return 'Понедельник'
+        case 1:
+            return 'Вторник'
+        case 2:
+            return 'Среда'
+        case 3:
+            return 'Четверг'
+        case 4:
+            return 'Пятница'
+        case 5:
+            return 'Суббота'
+        case 6:
+            return 'Воскресенье'
+        default:
+            return 'Не удалось определить'
+    }
+}
+
+const selectSlotText = (num: number): string => {
+    switch (num) {
+        case 0:
+            return 'Утро'
+        case 1:
+            return 'День'
+        case 2:
+            return 'Вечер'
+        case 3:
+            return 'Ночь'
+        default:
+            return 'Не удалось определить'
+    }
+} 
+
+export const getAlerts = async (req: Request, res: Response) => {
+
+    const {timeStart, timeEnd, clientId}: GetAlertsReqType = req.body
+
+    const db = createDb(res)
+
+    try {
+        const clientIpResp = await getQuery<{
+            clientIp: string
+        }>(
+            db,
+            'SELECT ip_addr as clientIp FROM vpn_users WHERE id = ?',
+            [clientId]
+        )
+
+        const clientIp = clientIpResp[0]?.clientIp
+
+        if (!!clientIp) {
+            const alertsArr = await getQuery<{
+                ts: number,
+                ipSource: string,
+                info: string,
+                ioc: string
+            }>(
+                db,
+                `SELECT ts, "id.resp_h" AS ipSource, sources AS info, "seen.indicator" AS ioc
+                FROM intel
+                WHERE "id.orig_h" = ? AND
+                ts >= ? AND ts <= ?;`,
+                [clientIp, timeStart, timeEnd]
+            )
+
+            const respAlert = alertsArr.map(alert => ({
+                ...alert,
+                labelTime: formatDateTime(alert.ts)
+            }));
+
+            const behavioralAlertsArr = await getQuery<{
+                id: number,
+                timestamp: number,
+                weekday: number,
+                slot: number,
+                anomaly_score: number,
+                details: string
+            }>(
+                db,
+                `SELECT id, timestamp, weekday, slot, anomaly_score, details FROM behavioral_alerts
+                WHERE user_id = ?;`,
+                [clientId]
+            )
+
+            const respBehavioralAlertsArr = behavioralAlertsArr.map(alert => (
+                {
+                    ...alert,
+                    weekday: selectWeekText(alert.weekday),
+                    slot: selectSlotText(alert.slot)
+                }
+            ))
+
+            db.close();
+
+            res.json(
+                {
+                    success: true,
+                    info: respAlert,
+                    infoBehavioral: respBehavioralAlertsArr
+                }
+            )
+        } else {
+            db.close()
+
+            res.json({
+                success: true,
+                info: []
+            })
+        }
+    } catch (e) {
+        db.close()
+
+        res.json({
+            success: false,
+            info: 'Произошла непредвиденная ошибка'
+        })
+    }
+}
+```
