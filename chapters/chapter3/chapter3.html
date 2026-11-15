@@ -278,18 +278,14 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">СОДЕРЖАНИЕ</h2>
    
   <ul>
-  <li><a href="#выбор-инструментов-и-среды-разработки-прототипа" id="toc-выбор-инструментов-и-среды-разработки-прототипа" class="nav-link active" data-scroll-target="#выбор-инструментов-и-среды-разработки-прототипа"><span class="header-section-number">3.1</span> Выбор инструментов и среды разработки прототипа</a></li>
-  <li><a href="#настройка-механизмов-перехвата-и-анализа-трафика" id="toc-настройка-механизмов-перехвата-и-анализа-трафика" class="nav-link" data-scroll-target="#настройка-механизмов-перехвата-и-анализа-трафика"><span class="header-section-number">3.2</span> Настройка механизмов перехвата и анализа трафика</a>
+  <li><a href="#реализация-системы" id="toc-реализация-системы" class="nav-link active" data-scroll-target="#реализация-системы"><span class="header-section-number">3.1</span> Реализация системы</a>
   <ul class="collapse">
-  <li><a href="#настройка-инструмента-openvpn" id="toc-настройка-инструмента-openvpn" class="nav-link" data-scroll-target="#настройка-инструмента-openvpn"><span class="header-section-number">3.2.1</span> Настройка инструмента OpenVPN</a></li>
-  <li><a href="#настройка-анализатора-сетевого-трафика-zeek" id="toc-настройка-анализатора-сетевого-трафика-zeek" class="nav-link" data-scroll-target="#настройка-анализатора-сетевого-трафика-zeek"><span class="header-section-number">3.2.2</span> Настройка анализатора сетевого трафика Zeek</a></li>
-  </ul></li>
-  <li><a href="#конфигурация-модуля-хранения-данных" id="toc-конфигурация-модуля-хранения-данных" class="nav-link" data-scroll-target="#конфигурация-модуля-хранения-данных"><span class="header-section-number">3.3</span> Конфигурация модуля хранения данных</a></li>
-  <li><a href="#создание-модуля-поведенческого-профилирования" id="toc-создание-модуля-поведенческого-профилирования" class="nav-link" data-scroll-target="#создание-модуля-поведенческого-профилирования"><span class="header-section-number">3.4</span> Создание модуля поведенческого профилирования</a></li>
-  <li><a href="#формирование-rest-api" id="toc-формирование-rest-api" class="nav-link" data-scroll-target="#формирование-rest-api"><span class="header-section-number">3.5</span> Формирование REST API</a>
-  <ul class="collapse">
-  <li><a href="#настройка-node.js" id="toc-настройка-node.js" class="nav-link" data-scroll-target="#настройка-node.js"><span class="header-section-number">3.5.1</span> Настройка Node.js</a></li>
-  <li><a href="#файловая-организация-подсистемы-и-программная-реализация-модуля" id="toc-файловая-организация-подсистемы-и-программная-реализация-модуля" class="nav-link" data-scroll-target="#файловая-организация-подсистемы-и-программная-реализация-модуля"><span class="header-section-number">3.5.2</span> Файловая организация подсистемы и программная реализация модуля</a></li>
+  <li><a href="#выбор-инструментов-и-среды-разработки-прототипа" id="toc-выбор-инструментов-и-среды-разработки-прототипа" class="nav-link" data-scroll-target="#выбор-инструментов-и-среды-разработки-прототипа"><span class="header-section-number">3.1.1</span> Выбор инструментов и среды разработки прототипа</a></li>
+  <li><a href="#настройка-механизмов-перехвата-и-анализа-трафика" id="toc-настройка-механизмов-перехвата-и-анализа-трафика" class="nav-link" data-scroll-target="#настройка-механизмов-перехвата-и-анализа-трафика"><span class="header-section-number">3.1.2</span> Настройка механизмов перехвата и анализа трафика</a></li>
+  <li><a href="#конфигурация-модуля-хранения-данных" id="toc-конфигурация-модуля-хранения-данных" class="nav-link" data-scroll-target="#конфигурация-модуля-хранения-данных"><span class="header-section-number">3.1.3</span> Конфигурация модуля хранения данных</a></li>
+  <li><a href="#создание-модуля-поведенческого-профилирования" id="toc-создание-модуля-поведенческого-профилирования" class="nav-link" data-scroll-target="#создание-модуля-поведенческого-профилирования"><span class="header-section-number">3.1.4</span> Создание модуля поведенческого профилирования</a></li>
+  <li><a href="#формирование-rest-api" id="toc-формирование-rest-api" class="nav-link" data-scroll-target="#формирование-rest-api"><span class="header-section-number">3.1.5</span> Формирование REST API</a></li>
+  <li><a href="#формирование-клиентского-интерфейса" id="toc-формирование-клиентского-интерфейса" class="nav-link" data-scroll-target="#формирование-клиентского-интерфейса"><span class="header-section-number">3.1.6</span> Формирование клиентского интерфейса</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -317,8 +313,10 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p>В технологическом разделе выполняется практическая реализация прототипа многоуровневой системы защиты пользователей от вредоносной сетевой активности с использованием поведенческого профилирования. Основная задача данного этапа заключается в проверке применимости архитектурных, алгоритмических и концептуальных решений, спроектированных во второй главе. В ходе практической реализации будет описан процесс развертывания серверной инфраструктуры, включающей инструменты изоляции и анализа сетевого трафика, создание интерфейса для клиент-серверного взаимодействия, разработку модуля поведенческого профилирования на основе алгоритмов машинного обучения, а также создание мобильного приложения для пользователей. Завершающим этапом станет комплексное тестирование разработанного прототипа системы для подтверждения корректности ее работы в режиме реального времени.</p>
-<section id="выбор-инструментов-и-среды-разработки-прототипа" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="выбор-инструментов-и-среды-разработки-прототипа"><span class="header-section-number">3.1</span> Выбор инструментов и среды разработки прототипа</h2>
+<section id="реализация-системы" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="реализация-системы"><span class="header-section-number">3.1</span> Реализация системы</h2>
+<section id="выбор-инструментов-и-среды-разработки-прототипа" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="выбор-инструментов-и-среды-разработки-прототипа"><span class="header-section-number">3.1.1</span> Выбор инструментов и среды разработки прототипа</h3>
 <p>Для развертывания серверной части программного комплекса был выбран виртуальный выделенный сервер под управлением операционной системы Ubuntu 24.04 LTS. Вычислительные мощности включают 2 ядра процессора, 2048 МБ оперативной памяти и накопитель объемом 40960 МБ. Выбор операционной системы обусловлен ее стабильностью, долгосрочной поддержкой и совместимостью с компонентами разрабатываемой системы. Выделенных аппаратных ресурсов достаточно для обеспечения стабильной маршрутизации трафика, непрерывного анализа сетевого трафика, а также корректной работы клиент-серверного интерфейса и алгоритмов машинного обучения на этапе прототипирования и тестирования системы.</p>
 <p>Для реализации интерфейса взаимодействия клиента с сервером была выбрана платформа Node.js, которая отличается высокой производительностью при работе с операциями ввода-вывода, также имеется возможность применения языка программирования JavaScript и его дополнения TypeScript, что позволяет создавать серверную и клиентскую части в едином стиле. В качестве фреймворка для проектирования выбран Express.js, так как поддерживает подключение к базе данных SQLite, имеет удобный и понятный синтаксис для разработки маршрутизации. В качестве основного языка разработки выбран TypeScript, так как он расширяет возможности JavaScript, добавляя строгую типизацию, следовательно, его использование снижает вероятность возникновения ошибок на этапе написания программного кода.</p>
 <p>Модуль поведенческого профилирования реализован на языке Python. Данный язык обладает развитой экосистемой библиотек для работы с моделями машинного обучения. В процессе программной реализации модуля применяются следующие библиотеки:</p>
@@ -336,11 +334,11 @@ ul.task-list li input[type="checkbox"] {
 <p>Для реализации клиентской части разрабатываемой системы выбрана платформа React Native и язык программирования JavaScript с дополнением TypeScript. Выбор данного механизма создания клиентского интерфейса обусловлен необходимостью разработки мобильного приложения.</p>
 <p>Учитывая многокомпонентность разрабатываемой системы, для создания клиент-серверного интерфейса и мобильного приложения была выбрана среда разработки Visual Studio Code. Такое решение обусловлено широкой экосистемой расширений данной платформы.</p>
 </section>
-<section id="настройка-механизмов-перехвата-и-анализа-трафика" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="настройка-механизмов-перехвата-и-анализа-трафика"><span class="header-section-number">3.2</span> Настройка механизмов перехвата и анализа трафика</h2>
+<section id="настройка-механизмов-перехвата-и-анализа-трафика" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="настройка-механизмов-перехвата-и-анализа-трафика"><span class="header-section-number">3.1.2</span> Настройка механизмов перехвата и анализа трафика</h3>
 <p>В данном разделе рассматривается практическая реализация подсистемы захвата сетевых пакетов, которая включает в себя маршрутизацию пользовательских данных через защищенный канал и настройку инструментов глубокого анализа трафика.</p>
-<section id="настройка-инструмента-openvpn" class="level3" data-number="3.2.1">
-<h3 data-number="3.2.1" class="anchored" data-anchor-id="настройка-инструмента-openvpn"><span class="header-section-number">3.2.1</span> Настройка инструмента OpenVPN</h3>
+<section id="настройка-инструмента-openvpn" class="level4" data-number="3.1.2.1">
+<h4 data-number="3.1.2.1" class="anchored" data-anchor-id="настройка-инструмента-openvpn"><span class="header-section-number">3.1.2.1</span> Настройка инструмента OpenVPN</h4>
 <p>Перехват пользовательского трафика выполняется с помощью средства OpenVPN. Принцип работы данного решения заключается в создании вртуальной частной сети, которая маршрутизирует весь сетевой трафик пользователей через выделенный сетевой интерфейс сервера. Благодаря такому подходу система мониторинга получает доступ для просмотра сетевых пакетов, которые принадлежать исключительно клиентам.</p>
 <p>Для настройки данного средства потребуется:</p>
 <ol type="1">
@@ -432,8 +430,8 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>Код скрипта представлен в <a href="appendices/appendix_ip_script.html" class="quarto-xref"><span>Приложение A</span></a></p>
 </section>
-<section id="настройка-анализатора-сетевого-трафика-zeek" class="level3" data-number="3.2.2">
-<h3 data-number="3.2.2" class="anchored" data-anchor-id="настройка-анализатора-сетевого-трафика-zeek"><span class="header-section-number">3.2.2</span> Настройка анализатора сетевого трафика Zeek</h3>
+<section id="настройка-анализатора-сетевого-трафика-zeek" class="level4" data-number="3.1.2.2">
+<h4 data-number="3.1.2.2" class="anchored" data-anchor-id="настройка-анализатора-сетевого-трафика-zeek"><span class="header-section-number">3.1.2.2</span> Настройка анализатора сетевого трафика Zeek</h4>
 <p>Для генерации подробных журналов событий о сетевых соединениях используется инструмент Zeek. По умолчанию пакет инструмента не включен в репозиторий Ubuntu по умолчанию, поэтому необходимо добавить репозиторий в APT. После установки и добавление Zeek в системную переменную производится проверка корректности установки (<a href="#fig-zeek-ver" class="quarto-xref">рис.&nbsp;<span>3.5</span></a>).</p>
 <div id="fig-zeek-ver" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -528,8 +526,8 @@ ul.task-list li input[type="checkbox"] {
 <p>На рисунке выше видно, что при подключении клиента локальной частной сети с ip-адресом 10.8.0.8 в базе данных отображается информация из журналов событий, также в таблице conn добавлена информация о геолокации, что свидетельствует о работе geoip-conn. Помимо этого стоит обратить внимание на intel, в котором имеются записи о подозрительных подключениях, данный факт говорит о работе расширения zeek-intelligence-feeds.</p>
 </section>
 </section>
-<section id="конфигурация-модуля-хранения-данных" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="конфигурация-модуля-хранения-данных"><span class="header-section-number">3.3</span> Конфигурация модуля хранения данных</h2>
+<section id="конфигурация-модуля-хранения-данных" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="конфигурация-модуля-хранения-данных"><span class="header-section-number">3.1.3</span> Конфигурация модуля хранения данных</h3>
 <p>В базе данных созданы 12 таблиц, ниже производится описание каждой из них.</p>
 <p>Хранение базовой информации профиля пользователя вирутальной частной сети производится в vpn_users, данная таблица содержит следующие поля:</p>
 <ul>
@@ -729,8 +727,8 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 </section>
-<section id="создание-модуля-поведенческого-профилирования" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="создание-модуля-поведенческого-профилирования"><span class="header-section-number">3.4</span> Создание модуля поведенческого профилирования</h2>
+<section id="создание-модуля-поведенческого-профилирования" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="создание-модуля-поведенческого-профилирования"><span class="header-section-number">3.1.4</span> Создание модуля поведенческого профилирования</h3>
 <p>Модуль поведенческого профилирования состоит из пяти взаимосвязанных скриптов, которые в совокупности образуют полный цикл обработки данных, начиная от сбора статистики, заканчивая машинным обучением и выявлением аномалий в реальном времени. Ниже приведена таблица с описанием каждого файла (<a href="#tbl-ml-funcs" class="quarto-xref">табл.&nbsp;<span>3.1</span></a>).</p>
 <div id="tbl-ml-funcs" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -816,11 +814,11 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 </section>
-<section id="формирование-rest-api" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="формирование-rest-api"><span class="header-section-number">3.5</span> Формирование REST API</h2>
+<section id="формирование-rest-api" class="level3" data-number="3.1.5">
+<h3 data-number="3.1.5" class="anchored" data-anchor-id="формирование-rest-api"><span class="header-section-number">3.1.5</span> Формирование REST API</h3>
 <p>Данный модуль разрабатываемой системы необходим для взаимодействия пользователя с удаленным сервером путем отправки запросов на строгоопределенные конечные точки (endpoint-ы), которые обеспечивают выполнение требуемых операций и предоставляют доступ к сведениям из базы данных.</p>
-<section id="настройка-node.js" class="level3" data-number="3.5.1">
-<h3 data-number="3.5.1" class="anchored" data-anchor-id="настройка-node.js"><span class="header-section-number">3.5.1</span> Настройка Node.js</h3>
+<section id="настройка-node.js" class="level4" data-number="3.1.5.1">
+<h4 data-number="3.1.5.1" class="anchored" data-anchor-id="настройка-node.js"><span class="header-section-number">3.1.5.1</span> Настройка Node.js</h4>
 <p>Установка среды разработки Node.js осуществляется через репозиторий операционной системы Linux Ubuntu. Каждому экземпляру Node принадлежит собственная версия npm - это стандратный менеджер пакетов, который входит в состав экосистемы Node.js, благодаря ему появляется возможность установки дополнительных модулей, необходимых для проекта. Для проверки корректности загрузки и настройки инструментов, в консоль выводятся их версии (<a href="#fig-node-npm-ver" class="quarto-xref">рис.&nbsp;<span>3.13</span></a>).</p>
 <div id="fig-node-npm-ver" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -833,8 +831,8 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 </section>
-<section id="файловая-организация-подсистемы-и-программная-реализация-модуля" class="level3" data-number="3.5.2">
-<h3 data-number="3.5.2" class="anchored" data-anchor-id="файловая-организация-подсистемы-и-программная-реализация-модуля"><span class="header-section-number">3.5.2</span> Файловая организация подсистемы и программная реализация модуля</h3>
+<section id="файловая-организация-подсистемы-и-программная-реализация-модуля" class="level4" data-number="3.1.5.2">
+<h4 data-number="3.1.5.2" class="anchored" data-anchor-id="файловая-организация-подсистемы-и-программная-реализация-модуля"><span class="header-section-number">3.1.5.2</span> Файловая организация подсистемы и программная реализация модуля</h4>
 <p>Файловая структура проекта представлена следующими директориями и конфигурационными файлами (<a href="#fig-api-directory-struct" class="quarto-xref">рис.&nbsp;<span>3.14</span></a>):</p>
 <ul>
 <li><p>node_modules - директория, содержащая все установленные соронние библиотеки и зависимости проекта, необходимые для корректного функционирования модуля;</p></li>
@@ -900,8 +898,236 @@ ul.task-list li input[type="checkbox"] {
 <p>Файл src/controllers/connections/countries.ts (см. <a href="appendices/appendix_api_countries.html" class="quarto-xref"><span>Приложение R</span></a>) предоставляет статистику по странам, с которыми взаимодействовал клиент, формируя рейтинг по количеству соединений с ip-адресами из конкретного региона. Функция getCountriesTop определяет роль и IP-адрес клиента. В базе данных выполняется запрос к таблице conn, подсчитывающий количество соединений для каждой страны за указанный период времени. Скрипт также запрашивает актуальный список стран, которые расположены в черном списке и помечает в итоговом ответе те регионы, которые в нем находятся.</p>
 <p>Файл src/controllers/connections/graph.ts (см. <a href="appendices/appendix_api_graph.html" class="quarto-xref"><span>Приложение S</span></a>) реализует логику сбора данных об объемах входящего и исходящего сетевого трафика для их визуализации в виде графиков на стороне мобильного приложения. Скрипт выполняет SQL-запросы к таблице conn и возвращает объект, который содержит массив точек для графика.</p>
 <p>Файл src/controllers/connections/ssl.ts (см. <a href="appendices/appendix_api_ssl.html" class="quarto-xref"><span>Приложение T</span></a>) формирует рейтинг наиболее посещаемых пользователем веб-ресурсов. Контроллер getSslTop запрашивает из таблицы ssl информацию об установленных соединениях и подсчитывает количество обращений к каждому домену. Скрипт учитывает черный список доменов. В результате пользователю возвращается массив из 5 самых популярных ресурсов по обращению.</p>
+</section>
+</section>
+<section id="формирование-клиентского-интерфейса" class="level3" data-number="3.1.6">
+<h3 data-number="3.1.6" class="anchored" data-anchor-id="формирование-клиентского-интерфейса"><span class="header-section-number">3.1.6</span> Формирование клиентского интерфейса</h3>
+<p>Мобильное приложение разработано для того, чтобы пользователю было комфортно и в привычном формате просматривать свою сетевую активность.</p>
+<section id="регистрация-пользователя" class="level4" data-number="3.1.6.1">
+<h4 data-number="3.1.6.1" class="anchored" data-anchor-id="регистрация-пользователя"><span class="header-section-number">3.1.6.1</span> Регистрация пользователя</h4>
+<p>Процесс создания новой учетной записи начинается на стартовом экране приветствия, где для инициализации процедуры новому клиенту необходимо нажать на кнопку “Создать профиль”. На следующем экране пользователю предлагается ввести уникальный логин, который в дальнейшем будет использоваться для его идентификации и отображения в системе. После подтверждения имени клиента осуществляется переход к этапу формирования пароля. На форме ввода отображается перечень требований к вводимой строке. Как только пароль удовлетворяет всем условиям, пользователю разрешается перейти на следующий шаг. Далее клиенту предлагается определить свою роль в системе, выбрав между вариантами “Администратор” и “Узел”, после подтверждения система оповещает о возможности сохранения сгенерированного конфигурационного файла. При согласии открывается файловый менеджер мобильного устройства для выбора директории сохранения, после чего управление возвращается в приложение.</p>
+<p>Завершающим этапом регистрации является создание пин-кода для осуществления быстрого доступа к личному кабинету. После подтверждения введенного короткого пароля пользователь автоматически перенаправляется на главный экран личного кабинета, при этом в случае отсутствия накопленной статитики сетевого трафика выводится соответствующее информационное уведомление.</p>
+<p>Стоит обратить внимание на завершающий этап регистрации для учетной записи с ролью “Узел”. После перехода на главный экран личного кабинета такому пользователю предлагается ввести уникальный код клиента с правами “Администратор” для установления связи между профилями. До тех пор, пока пользователь с типом “Узел” не введен код привязки, а “Администратор” не подтвердит послупивший запрос на добавление, доступ к информации о сетевом трафике в интерфейсе отображаться не будет.</p>
+<p>На рисунке ниже показан пошаговый процесс регистрации пользователя (<a href="#fig-mp-reg" class="quarto-xref">рис.&nbsp;<span>3.15</span></a>).</p>
+<div id="fig-mp-reg" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-reg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP_reg.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-reg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.15— Регистрация пользователя
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="вход-в-личный-кабинет" class="level4" data-number="3.1.6.2">
+<h4 data-number="3.1.6.2" class="anchored" data-anchor-id="вход-в-личный-кабинет"><span class="header-section-number">3.1.6.2</span> Вход в личный кабинет</h4>
+<p>Для пользователей, у которых уже создана учетная запись, в мобильном приложении предусмотрен сценарий авторизации по логину и паролю.</p>
+<p>Процесс начинается на стартовом экране, где пользователю необходимо нажать на кнопку “Войти”. После этого осуществляется переход на форму “Вход в личный кабинет”, содержащую поля для ввода логина и пароля. При успешном вводе учетных данных, система перенаправляет клиента на этап настройки короткого кода для осуществления быстрого входа в личный кабинет при последующих попытках входа. После успешной установки пин-кода клиент попадает в личный кабинет (<a href="#fig-enter-mp-long" class="quarto-xref">рис.&nbsp;<span>3.16</span></a>).</p>
+<div id="fig-enter-mp-long" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-enter-mp-long-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-enter-long.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-enter-mp-long-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.16— Вход в личный кабинет с помощью логина и пароля
+</figcaption>
+</figure>
+</div>
+<p>После успешного прохождения первичной авторизации и настройки короткого кода при всех последующий запусках мобильного приложения процедура входа в личный кабинет упрощается. Вместо повторного ввода логина и пароля система автоматически перенаправляет пользователя на экран быстрой аутентификации, где для получения доступа к профилю необходимо ввести ранее заданный пин-код (<a href="#fig-enter-mp-short" class="quarto-xref">рис.&nbsp;<span>3.17</span></a>).</p>
+<div id="fig-enter-mp-short" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-enter-mp-short-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-enter-short.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-enter-mp-short-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.17— Вход в личный кабинет с использованием короткого кода
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="экран-дашборды" class="level4" data-number="3.1.6.3">
+<h4 data-number="3.1.6.3" class="anchored" data-anchor-id="экран-дашборды"><span class="header-section-number">3.1.6.3</span> Экран “Дашборды”</h4>
+<p>На экране «Дашборды» пользователь может получить следующую информацию о своей сетевой активности:</p>
+<ul>
+<li><p>График входящего и исходящего трафика;</p></li>
+<li><p>Суммарный объем входящего и исходящего трафика;</p></li>
+<li><p>Страны, с которыми взаимодействовал клиент;</p></li>
+<li><p>Домены, которые посещал пользователь;</p></li>
+<li><p>Информация о наличии в трафике взаимодействия с объектами из черного списка.</p></li>
+</ul>
+<p>Благодаря графику входящего и исходящего трафика пользователь может визуально посмотреть на свою активность за определенный промежуток времени. У клиента имеется возможность настройки отображения графика по времени (час; 6 часов; 12 часов; день; неделя; месяц) и направлению (входящий; исходящий). Так же на оси ординат отмечаются максимальное значение трафика. При необходимости клиент может более детально посмотреть величину потока данных в конкретный период, для этого необходимо нажать и удерживать палец на графике (<a href="#fig-mp-graph" class="quarto-xref">рис.&nbsp;<span>3.18</span></a>).</p>
+<div id="fig-mp-graph" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-graph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-graph.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-graph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.18— График по сетевой активности
+</figcaption>
+</figure>
+</div>
+<p>Под графиком располагается секция с информацией о суммарном объеме входящего и исходящего трафика за определенный период времени (<a href="#fig-mp-summarise-data" class="quarto-xref">рис.&nbsp;<span>3.19</span></a>).</p>
+<div id="fig-mp-summarise-data" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-summarise-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-summarise-data.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-summarise-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.19— Секция суммарного объема трафика
+</figcaption>
+</figure>
+</div>
+<p>Пользователь может получить информацию о странах, с которыми он взаимодействовал. Для наглядности страны представлены в виде флагов, напротив каждого из которых располагается числовое значение, описываюзее количество взаимодействий с данным регионом. При необходимости клиент может переключить формат отображения стран с табличного на карту (<a href="#fig-mp-countries" class="quarto-xref">рис.&nbsp;<span>3.20</span></a>).</p>
+<div id="fig-mp-countries" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-countries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-countries.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-countries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.20— Секция со странами взаимодействия
+</figcaption>
+</figure>
+</div>
+<p>Клиенту предоставляются данные о 5 самых посещаемых доменов, с которыми происходило взаимодействие. Напротив каждого названия отображается числовое значение количества обращений (<a href="#fig-mp-sites" class="quarto-xref">рис.&nbsp;<span>3.21</span></a>).</p>
+<div id="fig-mp-sites" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-sites-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-sites.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-sites-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.21— Секция с доменами взаимодействия
+</figcaption>
+</figure>
+</div>
+<p>Также стоит отметить наличие дополнительного функционала – если пользователь захочет применить другие фильтры для сетевого трафика, то он может нажать на специальную кнопку в правом нижнем углу экрана, ему не обязательно листать в самый верх (<a href="#fig-mp-filters" class="quarto-xref">рис.&nbsp;<span>3.22</span></a>).</p>
+<div id="fig-mp-filters" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-filters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-filters.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-filters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.22— Применение фильтров
+</figcaption>
+</figure>
+</div>
+<p>При обнаружении в трафике стран или доменов из черного списка пользователя, вверху экрана отображается информационное окно с соответствующим текстом (<a href="#fig-mp-notif-black-list" class="quarto-xref">рис.&nbsp;<span>3.23</span></a>).</p>
+<div id="fig-mp-notif-black-list" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-notif-black-list-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-notif-black.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-notif-black-list-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.23— Наличие в сетевом трафике элементов из черного списка
+</figcaption>
+</figure>
+</div>
+<p>В соответствующей секции элемент из черного списка помечается красным цветом (<a href="#fig-mp-black-list-mention" class="quarto-xref">рис.&nbsp;<span>3.24</span></a>).</p>
+<div id="fig-mp-black-list-mention" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-black-list-mention-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-blacklist-mention.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-black-list-mention-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.24— Выделение элемента черного списка
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="экран-со-сведениями-учетной-записи" class="level4" data-number="3.1.6.4">
+<h4 data-number="3.1.6.4" class="anchored" data-anchor-id="экран-со-сведениями-учетной-записи"><span class="header-section-number">3.1.6.4</span> Экран со сведениями учетной записи</h4>
+<p>Для просмотра сведений об учетной записи необходимо воспользоваться кнопкой в верхнем левом углу экрана «Дашборды». После активации происходит переход на соответствующий экран, который содержит окно с данными о текущем клиенте: роль, ip-адрес в системе. Так же существует возможность скачать на мобильное устройство VPN-конфигурацию, для этого необходимо нажать на кнопку «VPN-конфигурация», которая расположена в нижней части области (<a href="#fig-mp-watch-pers-info" class="quarto-xref">рис.&nbsp;<span>3.25</span></a>).</p>
+<div id="fig-mp-watch-pers-info" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-watch-pers-info-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-watch-acc-info.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-watch-pers-info-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.25— Экран со сведениями о пользователе
+</figcaption>
+</figure>
+</div>
+<p>При необходимости клиент может выйти из профиля - нажатием на соответствующую кнопку, которая расположена в верхнем правом углу экрана. После активации возникает информационное окно (<a href="#fig-mp-change-profile" class="quarto-xref">рис.&nbsp;<span>3.26</span></a>).</p>
+<div id="fig-mp-change-profile" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-change-profile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-exit-profile.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-change-profile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.26— Смена пользователя
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="просмотр-информации-о-сетевом-трафике-пользователя-с-роль-узел" class="level4" data-number="3.1.6.5">
+<h4 data-number="3.1.6.5" class="anchored" data-anchor-id="просмотр-информации-о-сетевом-трафике-пользователя-с-роль-узел"><span class="header-section-number">3.1.6.5</span> Просмотр информации о сетевом трафике пользователя с роль “Узел”</h4>
+<p>После того как пользователь с ролью “Узел” зарегистрировался и отправил запрос на присоединение к клиенту “Администратор”, у второго отображается соответствующее сообщение о новом соединении (<a href="#fig-mp-new-node" class="quarto-xref">рис.&nbsp;<span>3.27</span></a>).</p>
+<div id="fig-mp-new-node" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-new-node-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-new-node.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-new-node-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.27— Добавление нового узла
+</figcaption>
+</figure>
+</div>
+<p>После принятия запроса, клиент “Администратор” может просмотреть сетевую активность узла (<a href="#fig-watch-node-info" class="quarto-xref">рис.&nbsp;<span>3.28</span></a>).</p>
+<div id="fig-watch-node-info" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-watch-node-info-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-watch-node-data.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-watch-node-info-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.28— Просмотр информации о трафике узла
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="экран-угрозы" class="level4" data-number="3.1.6.6">
+<h4 data-number="3.1.6.6" class="anchored" data-anchor-id="экран-угрозы"><span class="header-section-number">3.1.6.6</span> Экран “Угрозы”</h4>
+<p>Раздел «Угрозы» предназначен для просмотра и анализа сведений о потенциально нежелательном сетевом трафике, зафиксированном за определенный временной интервал. В верхней части экрана реализован переключатель категорий событий, позволяющий раздельно просматривать cигнатурные и поведенческие инциденты. При отсутствии зафиксированных аномалий система информирует пользователя.</p>
+<p>При наличии событий данные структурируются в виде таблицы. Для удобной навигации реализован механизм пагинации: пользователь может гибко настраивать количество отображаемых записей на одной странице и перемещаться между страницами при помощи специальных кнопок навигации. Настройка временного диапазона выборки осуществляется через всплывающую панель фильтрации.</p>
+<p>Поскольку отображаемые в таблице сетевые термины, протоколы и сигнатуры могут вызывать затруднения в интерфейс раздела интегрирован интеллектуальный помощник на базе большой языковой модели. При нажатии на соответствующую кнопку вызова ассистента, расположенную в правом нижнем углу над кнопкой фильтров, открывается интерактивная панель с поисковой строкой. Пользователь может задать вопрос и получить прямо в интерфейсе приложения пояснение.</p>
+<p>На рисунке ниже показан данный экран (<a href="#fig-mp-alerts" class="quarto-xref">рис.&nbsp;<span>3.29</span></a>).</p>
+<div id="fig-mp-alerts" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-alerts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-alerts.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-alerts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.29— Секция с информацией об угрозах
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="экран-ограничения" class="level4" data-number="3.1.6.7">
+<h4 data-number="3.1.6.7" class="anchored" data-anchor-id="экран-ограничения"><span class="header-section-number">3.1.6.7</span> Экран “Ограничения”</h4>
+<p>Для формирования черных списков стран и доменных имен в мобильном приложении реализован раздел «Ограничения», доступный пользователям с ролью «Администратор».</p>
+<p>Блокировка трафика по географическому признаку осуществляется с помощью выпадающего списка. При нажатии на данное поле раскрывается перечень регионов с отображением соответствующих государственных флагов. Выбор страны для занесения в черный список выполняется нажатием на нужную строку, после чего напротив нее появляется специальный маркер подтверждения, а в заголовке выпадающего списка динамически обновляется счетчик.</p>
+<p>Ниже на этом же экране располагается блок управления доменными ограничениями. Чтобы добавить ресурс в черный список, клиенту необходимо ввести доменное имя в текстовое поле и подтвердить ввод. Все добавленные записи отображаются в виде интерактивного списка под формой ввода. Для управления уже внесенными доменами предусмотрен жест сдвига элемента списка влево, который открывает панель дополнительных действий с двумя функциональными кнопками: редактирования доменного имени и его удаления из списка блокировки.</p>
+<p>Интерфейс страницы и сценарии взаимодействия с элементами управления представлены на рисунке ниже (<a href="#fig-mp-blaclist-screen" class="quarto-xref">рис.&nbsp;<span>3.30</span></a>).</p>
+<div id="fig-mp-blaclist-screen" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mp-blaclist-screen-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data/MP-black-list-screen.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mp-blaclist-screen-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Рисунок&nbsp;3.30— Секция “Ограничения”
+</figcaption>
+</figure>
+</div>
+<p><strong>Вывод по параграфу 3.1</strong></p>
+<p>В рамках практической реализации многоуровневой системы защиты пользователей от вредоносной сетевой активности был успешно сформирован и развернут комплекс, объединяющий серверную инфраструктуру перехвата трафика, модуль поведенческого анализа, клиент-серверный программный интерфейс и мобильное приложение.</p>
+<p>На базе виртуального выделенного сервера под управлением операционной системы Ubuntu 24.04 LTS настроено защищенное VPN-туннелирование с использованием OpenVPN. Интеграция анализатора сетевого трафика Zeek с плагинами обеспечила глубокую инспекцию пакетов, автоматическое обогащение метаданных геолокацией и регулярное выявление известных индикаторов компрометации.</p>
+<p>Для централизованного хранения информации о сетевых подключениях, учетных данных и результатов аналитики реализована реляционная база данных SQLite, включающая двенадцать взаимосвязанных таблиц, позволяющая напрямую принимать журналы событий от анализатора Zeek.</p>
+<p>Разработан модуль поведенческого профилирования, в котором реализован полный цикл обработки сетевых данных — от агрегации временных окон и формирования циклических признаков до обучения моделей машинного обучения на базе алгоритма «изолирующий лес» и детектирования аномалий в режиме реального времени.</p>
+<p>Взаимодействие между серверном и конечными устройствами обеспечено посредством REST API на платформе Node.js и фреймворке Express.js, реализующего механизмы аутентификации, автоматической генерации клиентских VPN-конфигураций, управления ролевой иерархией и обработки запросов к базе данных.</p>
+<p>Разработано мобильное приложение на базе React Native. Графический интерфейс клиента предоставляет полный набор средств для мониторинга сетевой активности, управления черными списками доменов и стран, анализа зафиксированных аномалий.</p>
+<p>Таким образом, в ходе реализации был сформирован рабочий прототип многоуровневой системы защиты, готовый к проведению тестирования.</p>
 
 
+</section>
 </section>
 </section>
 
