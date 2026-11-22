@@ -9,6 +9,7 @@ book:
     - chapters/chapter1/chapter1.qmd
     - chapters/chapter2/chapter2.qmd
     - chapters/chapter3/chapter3.qmd
+    - chapters/ending/ending.qmd
   appendices:
     - chapters/chapter3/appendices/appendix_ip_script.qmd
     - chapters/chapter3/appendices/appendix_ml_constants.qmd
@@ -37,6 +38,7 @@ mainfont: "Times New Roman"
 crossref:
   fig-title: "Рисунок"
   fig-prefix: "рис."
+  tbl-title: "Таблица"
   tbl-prefix: "табл."
   title-delim: " — "
   eq-prefix: ""
@@ -49,10 +51,29 @@ format:
     number-sections: true
     number-depth: 4
   pdf:
-    documentclass: report
+    documentclass: extreport
+    fontsize: 14pt
+    papersize: a4
     toc: true
+    toc-title: "Содержание"
     number-sections: true
     pdf-engine: xelatex
+    mainfont: "Times New Roman"
+    monofont: "Courier New"
+    highlight-style: none
+    geometry:
+      - left=30mm
+      - right=15mm
+      - top=20mm
+      - bottom=20mm
+    include-in-header: gost.tex
+  docx:
+    toc: true
+    toc-title: "Содержание"
+    number-sections: true
+    highlight-style: none
+    fig-align: center
+    reference-doc: gost-template.docx
 
 bibliography: references/references.bib
 csl: references/gost-r-7-0-5-2008-numeric.csl

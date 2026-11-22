@@ -1,0 +1,53 @@
+% Полуторный интервал и красная строка 1.25 см
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{indentfirst}
+\setlength{\parindent}{1.25cm}
+
+% Нумерация страниц внизу по центру
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% Заголовки глав: "ГЛАВА 1. НАЗВАНИЕ" (как в образце)
+\usepackage{titlesec}
+\titleformat{\chapter}[block]
+  {\normalfont\bfseries\fontsize{14}{16.8}\selectfont\MakeUppercase}
+  {ГЛАВА \thechapter.}{0.5em}{}
+\titlespacing*{\chapter}{1.25cm}{0pt}{12pt}
+
+% Заголовки параграфов: "1.1 Название" (без точки после номера)
+\titleformat{\section}[block]
+  {\normalfont\bfseries\fontsize{14}{16.8}\selectfont}
+  {\thesection}{0.5em}{}
+\titlespacing*{\section}{1.25cm}{12pt}{6pt}
+
+\titleformat{\subsection}[block]
+  {\normalfont\bfseries\fontsize{14}{16.8}\selectfont}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{1.25cm}{12pt}{6pt}
+
+% Подписи к рисункам (снизу, по центру) и таблицам (сверху, слева)
+\usepackage{caption}
+\captionsetup[figure]{
+  justification=centering,
+  labelsep=endash,
+  font={rm, normalsize}
+}
+\captionsetup[table]{
+  justification=raggedright,
+  singlelinecheck=false,
+  labelsep=endash,
+  font={rm, normalsize}
+}
+
+% Надпись "Продолжение таблицы X.Y" при переносе длинных таблиц (longtable)
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{\small}
