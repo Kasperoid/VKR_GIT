@@ -43,21 +43,24 @@ def train_user_model(user_id):
             VALUES (?, ?, datetime('now'))
         """, (user_id, path))
         conn.commit()
+    
+    print(f"Модель успешно обучена для пользователя {user_id}")
 
 def user_train():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute('''SELECT id FROM vpn_users WHERE vpn_users.ip_addr IS NOT NULL''')
-
     users = cursor.fetchall()
 
-    if (len(users) != 0):
+    if len(users) != 0:
         for user in users:
             user_id = user[0]
             train_user_model(user_id)
 
     cursor.close()
+    conn.close()
 
-user_train()
+if __name__ == "__main__":
+    user_train()
 ```

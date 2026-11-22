@@ -71,7 +71,7 @@ export const getSslTop = async (req: Request, res: Response) => {
                 [!!adminId ? adminId : clientId]
             )
 
-            let blacklistStr: string = blacklistStrResp[0]?.domains
+            let blacklistStr: string = blacklistStrResp.reduce((acc, cur) => acc + ',' + cur.domains, '')
 
             const blockedDomains = blacklistStr
                     ? blacklistStr.split(',').map(d => d.trim().toLowerCase()).filter(Boolean)
