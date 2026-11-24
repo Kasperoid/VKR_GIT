@@ -1,4 +1,4 @@
-# Содержимое helpers.py {#sec-ml-helpers .appendix}
+## Содержимое helpers.py {#sec-ml-helpers .appendix}
 
 ``` python
 import sqlite3

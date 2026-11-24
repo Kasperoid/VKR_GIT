@@ -1,4 +1,4 @@
-# Содержимое файла userNotificationControl.ts {#sec-api-userNotificationControl .appendix}
+## Содержимое файла userNotificationControl.ts {#sec-api-userNotificationControl .appendix}
 
 ``` python
 import {Response, Request} from 'express'

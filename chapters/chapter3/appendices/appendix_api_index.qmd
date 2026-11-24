@@ -1,4 +1,4 @@
-# Содержимое файла index.ts {#sec-api-index .appendix}
+## Содержимое файла index.ts {#sec-api-index .appendix}
 
 ``` python
 import express from 'express'

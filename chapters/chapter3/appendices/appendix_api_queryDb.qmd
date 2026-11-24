@@ -1,4 +1,4 @@
-# Содержимое файла queryDb.ts {#sec-api-queryDb .appendix}
+## Содержимое файла queryDb.ts {#sec-api-queryDb .appendix}
 
 ``` python
 import sqlite3 from 'sqlite3';

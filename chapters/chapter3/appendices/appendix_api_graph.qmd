@@ -1,4 +1,4 @@
-# Содержимое файла graph.ts {#sec-api-graph .appendix}
+## Содержимое файла graph.ts {#sec-api-graph .appendix}
 
 ``` python
 import { createDb, getQuery } from "../../db/queryDb";

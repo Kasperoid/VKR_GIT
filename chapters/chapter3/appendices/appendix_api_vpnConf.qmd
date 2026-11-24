@@ -1,4 +1,4 @@
-# Содержимое файла vpnConf.ts {#sec-api-vpnConf .appendix}
+## Содержимое файла vpnConf.ts {#sec-api-vpnConf .appendix}
 
 ``` python
 import { exec } from 'child_process';

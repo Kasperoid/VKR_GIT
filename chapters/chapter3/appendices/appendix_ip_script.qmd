@@ -1,4 +1,4 @@
-# Cкрипт парсинга status-server.log {#sec-status-server-script .appendix}
+## Cкрипт парсинга status-server.log {#sec-status-server-script .appendix}
 
 ``` python
 import sqlite3

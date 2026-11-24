@@ -1,4 +1,4 @@
-# Функция mainAuth {#sec-api-mainAuth .appendix}
+## Функция mainAuth {#sec-api-mainAuth .appendix}
 
 ``` python
 import crypto from 'crypto'

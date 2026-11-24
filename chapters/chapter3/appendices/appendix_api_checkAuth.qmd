@@ -1,4 +1,4 @@
-# Функция checkAuth {#sec-api-checkAuth .appendix}
+## Функция checkAuth {#sec-api-checkAuth .appendix}
 
 ``` python
 import { mainAuth } from "./auth"

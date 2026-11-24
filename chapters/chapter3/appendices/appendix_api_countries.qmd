@@ -1,4 +1,4 @@
-# Содержимое файла countries.ts {#sec-api-countries .appendix}
+## Содержимое файла countries.ts {#sec-api-countries .appendix}
 
 ``` python
 import {Request, Response} from 'express'

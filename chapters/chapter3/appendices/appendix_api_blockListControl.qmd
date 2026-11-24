@@ -1,4 +1,4 @@
-# Содержимое файла blockListControl.ts {#sec-api-blockListControl .appendix}
+## Содержимое файла blockListControl.ts {#sec-api-blockListControl .appendix}
 
 ``` python
 import { Response, Request } from 'express';
