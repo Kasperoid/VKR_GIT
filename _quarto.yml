@@ -1,38 +1,22 @@
 project:
   type: book
+  post-render:
+    - python3 fix_docx.py
 
 book:
   title: "Выпускная квалификационная работа"
   author: "Устинов И. А., БИСО-01-21"
   chapters:
     - index.qmd
+    - chapters/intro/intro.qmd
     - chapters/chapter1/chapter1.qmd
     - chapters/chapter2/chapter2.qmd
     - chapters/chapter3/chapter3.qmd
     - chapters/ending/ending.qmd
+    - references/references.qmd
   appendices:
-    - chapters/chapter3/appendices/appendix_ip_script.qmd
-    - chapters/chapter3/appendices/appendix_ml_constants.qmd
-    - chapters/chapter3/appendices/appendix_ml_collector.qmd
-    - chapters/chapter3/appendices/appendix_ml_helpers.qmd
-    - chapters/chapter3/appendices/appendix_ml_trainer.qmd
-    - chapters/chapter3/appendices/appendix_ml_checker.qmd
-    - chapters/chapter3/appendices/appendix_api_index.qmd
-    - chapters/chapter3/appendices/appendix_api_checkAuth.qmd
-    - chapters/chapter3/appendices/appendix_api_mainAuth.qmd
-    - chapters/chapter3/appendices/appendix_api_queryDb.qmd
-    - chapters/chapter3/appendices/appendix_api_vpnConf.qmd
-    - chapters/chapter3/appendices/appendix_api_userEntryControl.qmd
-    - chapters/chapter3/appendices/appendix_api_userDependControl.qmd
-    - chapters/chapter3/appendices/appendix_api_userNotificationControl.qmd
-    - chapters/chapter3/appendices/appendix_api_userControl.qmd
-    - chapters/chapter3/appendices/appendix_api_blockListControl.qmd
-    - chapters/chapter3/appendices/appendix_api_alert.qmd
-    - chapters/chapter3/appendices/appendix_api_countries.qmd
-    - chapters/chapter3/appendices/appendix_api_graph.qmd
-    - chapters/chapter3/appendices/appendix_api_ssl.qmd
+    - chapters/chapter3/appendices/appendix_listings.qmd
     
-lang: ru
 mainfont: "Times New Roman"
 
 crossref:
@@ -40,7 +24,8 @@ crossref:
   fig-prefix: "рис."
   tbl-title: "Таблица"
   tbl-prefix: "табл."
-  title-delim: " — "
+  sec-prefix: "Приложение"
+  title-delim: "\u00a0–"
   eq-prefix: ""
 
 format:
@@ -72,8 +57,7 @@ format:
     toc-title: "Содержание"
     number-sections: true
     highlight-style: none
+    reference-doc: doc-reference.docx
     fig-align: center
-    reference-doc: gost-template.docx
-
 bibliography: references/references.bib
 csl: references/gost-r-7-0-5-2008-numeric.csl
